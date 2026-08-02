@@ -102,6 +102,11 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 
 ## Important environment caveats
 
+### Where the Python code lives: Windows path via WSL mount, not a separate clone
+This project's Python code (MCP server in Phase 1, CrewAI project in Phase 3) is developed and run from this same project folder, accessed from a WSL terminal through the Windows-drive mount WSL2 sets up automatically: `/mnt/d/Python_Projects/VT-Projects/12-Capstone-Product_Strategy_Simulation`. That's the identical git repo already rooted on the Windows `D:` drive — not a second copy cloned into WSL's native filesystem (e.g. `~/projects/...`). `cd` there from WSL, then run `uv`/`python` normally; `git push` from WSL pushes straight to GitHub over the network like any other git remote, so there's no separate "get the code out of WSL" step.
+
+Tradeoff accepted: file I/O across the `/mnt/` bridge (9p/drvfs) is somewhat slower than a Linux-native path, but is a non-issue at this project's scale (a handful of Python files, no large datasets, no heavy file-watcher workloads). A WSL-native clone would only be worth the added complexity of keeping two copies in sync if I/O performance actually became a bottleneck.
+
 ### Node/n8n only resolve correctly from an interactive WSL shell
 nvm's PATH setup lives in `~/.bashrc`, which is sourced by **interactive** shells (`bash -ic "..."`, or a normal terminal you type into) but *not* by non-interactive login shells (`bash -lc "..."`, which reads `~/.profile` instead). Invoked the wrong way, `node`/`npm`/`n8n` silently fall through to whatever same-named entries exist elsewhere on the inherited Windows `PATH` (e.g. a Windows-side Node.js install), which can't execute from Linux and fail with a confusing "Permission denied". Always start n8n (or run any Node/npm command) from an actual interactive terminal, not a scripted non-interactive invocation.
 
