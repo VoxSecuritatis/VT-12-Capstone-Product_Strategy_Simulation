@@ -41,6 +41,11 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
   ```
 - Git-ignored (`.venv/` in `.gitignore`).
 
+### run.ps1
+- **What:** bootstraps the Windows-side `.venv` (creating it from `D:\Python312` if missing), upgrades `pip`, installs/updates from `requirements.txt`, then launches `main.py`. Same pattern as the prior FinEdge project's `run.ps1`.
+- **Run:** `.\run.ps1` from the project root.
+- **Note:** `requirements.txt` and `main.py` don't exist yet (no CrewAI scaffolding has been built), so the last two steps currently fail with a plain "file not found" error — expected until Phase 3 scaffolds the CrewAI project.
+
 ### uv 0.12.1
 - **What:** Rust-based Python package/project manager. Used to scaffold and manage the CrewAI project (the rubric requires "UV structure").
 - **Obtain:** `curl -LsSf https://astral.sh/uv/install.sh | sh` (installs to `~/.local/bin`; a new shell picks it up on PATH automatically).
