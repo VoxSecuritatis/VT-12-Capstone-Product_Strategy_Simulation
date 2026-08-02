@@ -84,6 +84,10 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 - **Obtain:** copy `.env.example` to `.env`, then fill in real values: a SerpAPI key and an OpenAI API key. Both are already in place locally.
 - **Rule:** Claude does not read or write `.env` under any circumstances (standing project rule) — only `.env.example` is ever touched by Claude. Verifying `.env`'s contents or filling in real keys is done by the user directly.
 
+### `.claude/` (project-local Claude Code config)
+- **What:** the standard Claude Code project scaffold — `settings.json`, `commands/`, `agents/`, `skills/` — currently empty placeholders. Local only, git-ignored.
+- **Note:** there's no separate "rules" folder in Claude Code's convention; project-wide instructions live in `CLAUDE.md` at the project root (also git-ignored, local only).
+
 ## Important environment caveats
 
 ### Node/n8n only resolve correctly from an interactive WSL shell

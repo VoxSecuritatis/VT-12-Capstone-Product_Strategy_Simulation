@@ -29,3 +29,6 @@ ROADMAP.md
 
 # local Windows-side run script, kept local only
 run.ps1
+
+# local Claude Code project config (settings, commands, agents, skills)
+.claude/
