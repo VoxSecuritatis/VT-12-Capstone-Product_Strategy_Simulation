@@ -18,6 +18,7 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 | Node.js | 24.18.0 | `~/.nvm/versions/node/v24.18.0/bin/node` | n8n runtime |
 | npm | 11.16.0 | bundled with the above Node.js install | Package manager used to install n8n |
 | n8n | 2.27.4 | `~/.nvm/versions/node/v24.18.0/bin/n8n` | Workflow orchestration (one of the two required implementations) |
+| `.env` / `.env.example` | n/a | project root | Secrets (`.env`, git-ignored, Claude never touches) and their variable-name template (`.env.example`, tracked) |
 
 ## Per-tool detail
 
@@ -77,6 +78,11 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 - **Obtain:** `npm install -g n8n` (installs under the active nvm Node version).
 - **Verify:** `n8n --version`
 - **Run:** `n8n start`, then open `http://localhost:5678`. **Must be launched from an interactive WSL shell** — see caveat below. Confirmed working: dashboard loads cleanly both via `curl` (`HTTP 200`) and manually in a browser.
+
+### Secrets: `.env` / `.env.example`
+- **What:** `.env.example` (tracked, public) lists the required variable names with clean placeholder values — `SERPAPI_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODEL` (default `gpt-4.1-mini`). `.env` (git-ignored) holds the real values and already exists locally.
+- **Obtain:** copy `.env.example` to `.env`, then fill in real values: a SerpAPI key (signup still pending — see ROADMAP Phase 0) and an OpenAI API key.
+- **Rule:** Claude does not read or write `.env` under any circumstances (standing project rule) — only `.env.example` is ever touched by Claude. Verifying `.env`'s contents or filling in real keys is done by the user directly.
 
 ## Important environment caveats
 
