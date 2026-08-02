@@ -2,7 +2,7 @@
 
 *Virginia Tech Applied Agentic AI Post-Graduate Program — Capstone Project (Product Strategy Simulation)*
 
-> **Status:** 🚧 Planning stage — environment not yet provisioned, no code written. This README is the north-star spec; see `ROADMAP.md` (local only — not published to GitHub) for the build sequence.
+> **Status:** 🚧 Phase 0 (Environment & Access Setup) nearly complete — no application code written yet. This README is the north-star spec; see `ROADMAP.md` (local only — not published to GitHub) for the build sequence.
 >
 > **Repo:** [VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation](https://github.com/VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation)
 
@@ -72,10 +72,11 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 │   ├── report.md           # generated comparison writeup (output of compare.py)
 │   └── run_logs/           # raw JSONL/CSV from both implementations, shared schema
 ├── outputs/                # Sample Google Doc exports, evidence JSON, generated tables
+├── screenshots/            # Build-walkthrough screenshots for the reflections doc, named <Phase>-<NN>-name.jpg
 └── tests/                  # Unit tests (mocked tools), scenario tests (fixed briefs)
 ```
 
-*(Not yet created — scaffolding happens per `ROADMAP.md`, local only.)*
+*(`screenshots/` exists already; the rest is not yet created — scaffolding happens per `ROADMAP.md`, local only.)*
 
 **Python approach:** fully modular `.py` throughout. The CrewAI project follows CrewAI's own uv scaffold, the MCP server is a plain long-running Python process, and even the n8n-vs-CrewAI comparison (`comparison/compare.py`) is a script rather than a notebook, so every part of the system is pytest-testable and reproducible with a single command. Both implementations write run-log rows to a shared schema (`run_id, implementation, agent, timestamp, tokens_in, tokens_out, cost_usd, latency_ms, run_status`) in `comparison/run_logs/`, so `compare.py` can read both without special-casing either implementation.
 
@@ -86,7 +87,7 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 - Python 3.11+ and `uv`
 - An MCP server for research tools — adapting an existing/reference implementation rather than building one from scratch (first time working with MCP servers)
 - SerpAPI key — obtained (free tier, 250 lookups/month), in `.env`
-- Google account for Docs export: a personal Google account, OAuth user-consent flow (both n8n and CrewAI run locally, so no service account needed) — account details kept out of documentation, configured via `.env`
+- Google account for Docs export: a personal Google account, OAuth user-consent flow (both n8n and CrewAI run locally, so no service account needed) — Google Cloud project created, Docs + Drive APIs enabled, OAuth consent screen and Client ID configured; Client ID/Secret in `.env`. Account details kept out of documentation.
 - **LLM provider:** OpenAI `gpt-4.1-mini` as the default model for both implementations — cheap and fast enough to give clean, comparable cost/latency numbers and to support repeated runs for the reproducibility KPI without burning budget. Anthropic Claude (e.g. Haiku 4.5) is an optional later comparison once the baseline works, not required for the MVP.
 
 See `SETUP.md` for the full as-verified toolchain: exact versions, install locations, and the install/version/test command for each (Python, `uv`, `nvm`, Node.js, npm, n8n), plus the WSL networking fixes that were needed to get reliable internet access working.

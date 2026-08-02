@@ -84,6 +84,17 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 - **Obtain:** copy `.env.example` to `.env`, then fill in real values: a SerpAPI key and an OpenAI API key. Both are already in place locally.
 - **Rule:** Claude does not read or write `.env` under any circumstances (standing project rule) — only `.env.example` is ever touched by Claude. Verifying `.env`'s contents or filling in real keys is done by the user directly.
 
+### Google Cloud project + OAuth (Docs export)
+- **What:** a Google Cloud project (`vt-capstone-gtm-planner`) with the Google Docs API and Google Drive API enabled; an OAuth consent screen (External, Testing status, scopes `.../auth/documents` + `.../auth/drive.file`, one test user); and an OAuth 2.0 Client ID (Web application type, redirect URI `http://localhost:5678/rest/oauth2-credential/callback` for n8n).
+- **Obtain:** walked through in Google Cloud Console (console.cloud.google.com) — see `screenshots/Phase0-01` through `Phase0-08` for the build walkthrough.
+- **Credentials:** Client ID/Secret added to `.env` as `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` by the user. The downloaded `client_secret*.json` file Google's console offers is git-ignored (`client_secret*.json` / `*credentials*.json` patterns) — it was briefly sitting untracked in the project root unprotected before that pattern was added; no exposure occurred since it was never committed.
+- **Note:** this Client ID currently has one redirect URI (n8n's). When Phase 3 (CrewAI) needs its own OAuth flow, decide then whether to add a second redirect URI to this same client or create a separate one.
+
+### Screenshots (`screenshots/`)
+- **What:** build-walkthrough screenshots for the final reflections/submission document. Tracked (pushed to GitHub), unlike `documentation/`.
+- **Naming:** `<Phase>-<NN>-name.jpg`, where `<Phase>` matches the ROADMAP.md phase (e.g. `Phase0`) and `<NN>` is a two-digit sequence starting at `01`. Claude proactively flags when a screenshot-worthy moment is reached and suggests the filename, one at a time, at the point it's actually reached (not a pre-emptive batch list).
+- **Rule:** check for visible secrets/PII (API keys, OAuth client secrets, email addresses) before saving; redact/crop/blur as needed. Google's own UI already masks OAuth client secrets after creation, which helps.
+
 ### `.claude/` (project-local Claude Code config)
 - **What:** the standard Claude Code project scaffold — `settings.json`, `commands/`, `agents/`, `skills/`. Local only, git-ignored.
 - **`skills/python-style/SKILL.md`:** this project's Python coding standards (type hints, docstrings, section headers, testing, error handling, dependencies, formatting), moved out of `CLAUDE.md` so they're loaded on demand only when Python code is actually being written, rather than force-loaded into every turn while no Python exists yet (Phase 0-2). `commands/` and `agents/` remain empty placeholders.
