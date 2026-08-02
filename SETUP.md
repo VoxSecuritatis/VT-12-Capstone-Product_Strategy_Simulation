@@ -19,6 +19,7 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 | npm | 11.16.0 | bundled with the above Node.js install | Package manager used to install n8n |
 | n8n | 2.27.4 | `~/.nvm/versions/node/v24.18.0/bin/n8n` | Workflow orchestration (one of the two required implementations) |
 | `.env` / `.env.example` | n/a | project root | Secrets (`.env`, git-ignored, Claude never touches) and their variable-name template (`.env.example`, tracked) |
+| `mcp-server` (uv project) | 0.1.0 | `mcp-server/` | Shared MCP server (search + fetch + citation/caching), adapted from the official reference `fetch` server |
 
 ## Per-tool detail
 
@@ -83,6 +84,34 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 - **What:** `.env.example` (tracked, public) lists the required variable names with clean placeholder values — `SERPAPI_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODEL` (default `gpt-5`). `.env` (git-ignored) holds the real values and already exists locally.
 - **Obtain:** copy `.env.example` to `.env`, then fill in real values: a SerpAPI key and an OpenAI API key. Both are already in place locally.
 - **Rule:** Claude does not read or write `.env` under any circumstances (standing project rule) — only `.env.example` is ever touched by Claude. Verifying `.env`'s contents or filling in real keys is done by the user directly.
+
+### `mcp-server` (shared MCP server)
+- **What:** a `uv`-structured Python project at `mcp-server/`, adapted from the official reference `fetch` MCP server (`modelcontextprotocol/servers`) plus a custom `search` tool (SerpAPI) and a citation/caching layer. Serves both tools over real MCP protocol via SSE transport (`mcp_server.run(transport="sse")`), so n8n's MCP Client Tool node and CrewAI's `MCPServerAdapter` both connect natively, on the same running server, over `http://127.0.0.1:8000/sse` by default.
+- **Dependencies:** `mcp[cli]`, `markdownify`, `protego`, `readabilipy`, `pydantic`, `requests`, `python-dotenv` (runtime); `pytest` (dev). Installed via `uv add` inside `mcp-server/`; see `mcp-server/pyproject.toml`.
+- **Run:** `cd mcp-server && uv run mcp-server` (from WSL, via the `/mnt/d/...` path per the "where the code lives" note below). Reads `SERPAPI_API_KEY` from the project-root `.env` automatically (python-dotenv walks up from the current directory to find it).
+- **Test:** `cd mcp-server && uv run pytest` -- 9 tests, all mocked HTTP responses, no live network/API calls needed.
+- **Smoke-test with curl** (per the rubric's explicit instruction), with the server running in one terminal:
+  ```bash
+  # 1. Open the SSE stream in the background, capture the session endpoint it announces
+  curl -sN http://127.0.0.1:8000/sse > /tmp/mcp-sse.log &
+  cat /tmp/mcp-sse.log   # look for: event: endpoint / data: /messages/?session_id=...
+
+  # 2. Complete the MCP handshake against that session endpoint
+  SESSION_URL="http://127.0.0.1:8000/messages/?session_id=<id from step 1>"
+  curl -s -X POST "$SESSION_URL" -H 'Content-Type: application/json' \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl-smoke-test","version":"0.1"}}}'
+  curl -s -X POST "$SESSION_URL" -H 'Content-Type: application/json' \
+    -d '{"jsonrpc":"2.0","method":"notifications/initialized"}'
+
+  # 3. List tools, then call one -- responses arrive on the SSE stream from step 1, not the POST body
+  curl -s -X POST "$SESSION_URL" -H 'Content-Type: application/json' \
+    -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
+  curl -s -X POST "$SESSION_URL" -H 'Content-Type: application/json' \
+    -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"fetch","arguments":{"url":"https://example.com"}}}'
+  ```
+  Confirmed working: `initialize` returns server info/capabilities, `tools/list` returns both `search` and `fetch` with their schemas, and `tools/call` for both tools returns cited, timestamped JSON. A repeated `fetch` on the same URL returned instantly from cache instead of re-fetching.
+- **Node.js note:** the `fetch` tool uses `readabilipy` for higher-quality article extraction when Node.js is available, gated by `shutil.which("node")` at call time (stdlib only, no extra dependency) rather than a bare try/except -- a known upstream issue (`modelcontextprotocol/servers#4199`) means `readabilipy`'s Node path **hangs indefinitely** if Node is missing or misconfigured, since its subprocess call has no timeout. With Node present (as it is here, for n8n), the *first* live `fetch` call incurs a one-time ~15-20s delay while `npx` installs a helper package; later calls are fast. If Node is ever unavailable, the tool falls back to a pure-Python extraction path (~1.2s per the upstream issue's own benchmark) instead of hanging.
+- **Caching:** `mcp-server/.cache/` (git-ignored) holds one JSON file per citation, keyed by a hash of the URL, with a 6-hour freshness window -- this file I/O lives in the MCP server itself, not n8n (see the Phase 1 note in `ROADMAP.md` on why n8n can't own this directly).
 
 ### Google Cloud project + OAuth (Docs export)
 - **What:** a Google Cloud project (`vt-capstone-gtm-planner`) with the Google Docs API and Google Drive API enabled; an OAuth consent screen (External, Testing status, scopes `.../auth/documents` + `.../auth/drive.file`, one test user); and an OAuth 2.0 Client ID (Web application type, redirect URI `http://localhost:5678/rest/oauth2-credential/callback` for n8n).

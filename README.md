@@ -2,7 +2,7 @@
 
 *Virginia Tech Applied Agentic AI Post-Graduate Program — Capstone Project (Product Strategy Simulation)*
 
-> **Status:** 🚧 Phase 0 (Environment & Access Setup) nearly complete — no application code written yet. This README is the north-star spec; see `ROADMAP.md` (local only — not published to GitHub) for the build sequence.
+> **Status:** 🚧 Phase 0 (Environment & Access Setup) and Phase 1 (MCP Server) complete. Phase 2 (n8n workflow) is next. This README is the north-star spec; see `ROADMAP.md` (local only — not published to GitHub) for the build sequence.
 >
 > **Repo:** [VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation](https://github.com/VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation)
 
@@ -57,6 +57,25 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 - **Docs Writer** exports the final GTM plan to Google Docs (PDF export optional).
 - Logging, retries, and cost/latency tracking are cross-cutting concerns in both implementations.
 
+### MCP server: why we built one, and what it does
+
+The assignment requires starting an MCP server and connecting both implementations to it, but doesn't require writing one from scratch. Rather than build blind (first time working with MCP) or gamble on an unverified off-the-shelf bundle, we adapted the official reference `fetch` server from `modelcontextprotocol/servers` and extended it -- the lowest-cost path that still teaches real MCP mechanics through a working example.
+
+**What it accomplishes:**
+- **`search`** -- queries SerpAPI and returns cited results (title, link, snippet, citation ID) for the Research Agent.
+- **`fetch`** -- fetches a URL, respects `robots.txt`, converts the page to markdown, and returns a cited, timestamped snapshot.
+- **Citation/caching layer** -- every `search` and `fetch` result is written to a local, timestamped, citation-ID-keyed snapshot, so repeated lookups within a freshness window reuse the snapshot instead of re-fetching (the source-volatility mitigation from the Risks table below). This file I/O lives in the MCP server because n8n can't own it directly (its Code node sandboxes `fs`, and Write to File needs binary input, not text).
+- **Real MCP protocol over SSE** -- not a generic REST wrapper. n8n's native MCP Client Tool node and CrewAI's `MCPServerAdapter` both connect to the same running server over SSE, exactly matching the shared-tool-layer architecture diagrammed above.
+
+**Steps taken:**
+1. Scaffolded `mcp-server/` as its own `uv` project (consistent with the CrewAI project's planned uv structure).
+2. Added the reference `fetch` server's own dependencies (`mcp`, `markdownify`, `protego`, `readabilipy`, `pydantic`, `requests`) rather than reinventing HTML-to-markdown conversion or robots.txt parsing.
+3. Wrote the custom `search` tool and the citation/caching layer alongside the adapted `fetch` tool, all served from one `MCPServer` instance over SSE (`mcp_server.run(transport="sse")`).
+4. Added a `pytest` suite (mocked HTTP responses, no live network needed) covering the cache, search, and fetch logic.
+5. Smoke-tested every tool for real: ran the server, then used `curl` to drive the full MCP protocol by hand (`initialize` handshake, `tools/list`, `tools/call` for both tools) and confirmed cited, timestamped results came back correctly, including a cache hit on a repeated `fetch`.
+
+See `SETUP.md` for the exact commands (run, curl smoke-test sequence) and a note on a Node.js-related extraction-quality tradeoff inside the `fetch` tool.
+
 ## Repository structure (planned)
 
 ```
@@ -76,7 +95,7 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 └── tests/                  # Unit tests (mocked tools), scenario tests (fixed briefs)
 ```
 
-*(`screenshots/` exists already; the rest is not yet created — scaffolding happens per `ROADMAP.md`, local only.)*
+*(`screenshots/` and `mcp-server/` exist already; the rest is not yet created — scaffolding happens per `ROADMAP.md`, local only.)*
 
 **Python approach:** fully modular `.py` throughout. The CrewAI project follows CrewAI's own uv scaffold, the MCP server is a plain long-running Python process, and even the n8n-vs-CrewAI comparison (`comparison/compare.py`) is a script rather than a notebook, so every part of the system is pytest-testable and reproducible with a single command. Both implementations write run-log rows to a shared schema (`run_id, implementation, agent, timestamp, tokens_in, tokens_out, cost_usd, latency_ms, run_status`) in `comparison/run_logs/`, so `compare.py` can read both without special-casing either implementation.
 

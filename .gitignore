@@ -13,6 +13,9 @@ __pycache__/
 .venv/
 venv/
 
+# MCP server: cached/fetched research snapshots, not source
+mcp-server/.cache/
+
 # Node / n8n
 node_modules/
 
