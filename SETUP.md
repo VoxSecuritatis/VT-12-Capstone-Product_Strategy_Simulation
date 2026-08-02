@@ -10,8 +10,10 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 |---|---|---|---|
 | WSL2 | 2.7.3.0 | Windows host | Linux environment hosting n8n, Python, MCP server |
 | Ubuntu | 24.04.4 LTS | WSL2 distro | Base OS |
-| Python | 3.12.3 | `/usr/bin/python3.12` (symlinked as `/usr/bin/python3`) | CrewAI project runtime, MCP server |
+| Python (WSL) | 3.12.3 | `/usr/bin/python3.12` (symlinked as `/usr/bin/python3`) | CrewAI project runtime, MCP server |
 | uv | 0.12.1 | `~/.local/bin/uv`, `~/.local/bin/uvx` | Python package/project manager (uv-structured CrewAI project per rubric) |
+| Python (Windows) | 3.12.10 | `D:\Python312\python.exe` | Base interpreter for the Windows-side project `.venv` |
+| `.venv` (Windows) | 3.12.10 | `.venv\` in project root | Local Windows-side virtual environment, modeled on `D:\Python312`; git-ignored |
 | nvm | 0.40.6 | `~/.nvm` | Node.js version manager |
 | Node.js | 24.18.0 | `~/.nvm/versions/node/v24.18.0/bin/node` | n8n runtime |
 | npm | 11.16.0 | bundled with the above Node.js install | Package manager used to install n8n |
@@ -24,10 +26,20 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 - **Obtain:** `wsl --install` from an elevated PowerShell (Microsoft's standard installer); already provisioned here.
 - **Verify:** `wsl --version` (from PowerShell); `lsb_release -d` (inside WSL).
 
-### Python 3.12.3
+### Python (WSL) 3.12.3
 - **What:** CPython interpreter. Ships preinstalled with Ubuntu 24.04 LTS — no install step was needed.
 - **Obtain (if ever missing):** `sudo apt install python3`, or `uv python install 3.12` to have `uv` manage it instead.
 - **Verify:** `python3 --version`
+
+### Python (Windows) 3.12.10 + project `.venv`
+- **What:** a separate, existing Windows-side Python 3.12.10 install at `D:\Python312`, used as the base interpreter for this project's Windows-side virtual environment (`.venv` in the project root). Distinct from the WSL Python above.
+- **Obtain:** `.venv` created with `D:\Python312\python.exe -m venv .venv` from the project root.
+- **Verify:**
+  ```powershell
+  .venv\Scripts\python.exe --version
+  Get-Content .venv\pyvenv.cfg
+  ```
+- Git-ignored (`.venv/` in `.gitignore`).
 
 ### uv 0.12.1
 - **What:** Rust-based Python package/project manager. Used to scaffold and manage the CrewAI project (the rubric requires "UV structure").
