@@ -4,6 +4,8 @@ documentation/other_projects/
 # Secrets
 .env
 *.env
+client_secret*.json
+*credentials*.json
 
 # Python
 __pycache__/
