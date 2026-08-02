@@ -2,7 +2,7 @@
 
 *Virginia Tech Applied Agentic AI Post-Graduate Program — Capstone Project (Product Strategy Simulation)*
 
-> **Status:** 🚧 Planning stage — environment not yet provisioned, no code written. This README is the north-star spec; see [ROADMAP.md](ROADMAP.md) for the build sequence.
+> **Status:** 🚧 Planning stage — environment not yet provisioned, no code written. This README is the north-star spec; see `ROADMAP.md` (local only — not published to GitHub) for the build sequence.
 >
 > **Repo:** [VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation](https://github.com/VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation)
 
@@ -40,7 +40,7 @@ Every design and implementation decision in this repo is measured against these.
 | Latency | <15 minutes from project brief to drafted GTM document |
 | Strategy quality | Human rubric score ≥4/5 (clarity, feasibility, differentiation) |
 | Reproducibility | ≥80% consistent facts across multiple runs |
-| Cost efficiency | Cloud/API spend per run within budget cap — proposed **$1.00 per end-to-end run, per implementation** (gpt-4o-mini token costs + SerpAPI free tier); see [Open Questions](ROADMAP.md#open-questions) |
+| Cost efficiency | Cloud/API spend per run within budget cap — proposed **$1.00 per end-to-end run, per implementation** (gpt-4o-mini token costs + SerpAPI free tier); see Open Questions in `ROADMAP.md` (local only) |
 
 ## Architecture
 
@@ -70,7 +70,7 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 └── comparison/             # n8n vs CrewAI cost/latency/reliability results
 ```
 
-*(Not yet created — scaffolding happens per [ROADMAP.md](ROADMAP.md).)*
+*(Not yet created — scaffolding happens per `ROADMAP.md`, local only.)*
 
 ## Prerequisites
 
@@ -82,7 +82,7 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 - Google account for Docs export: `brockfrarycerts@gmail.com`, OAuth user-consent flow (both n8n and CrewAI run locally, so no service account needed)
 - **LLM provider:** OpenAI `gpt-4o-mini` as the default model for both implementations — cheap and fast enough to give clean, comparable cost/latency numbers and to support repeated runs for the reproducibility KPI without burning budget. Anthropic Claude (e.g. Haiku 4.5) is an optional later comparison once the baseline works, not required for the MVP.
 
-See [Open Questions](ROADMAP.md#open-questions) in the roadmap — a few remain unconfirmed (MCP server choice, budget cap number, reference projects to model).
+See Open Questions in `ROADMAP.md` (local only) — a few remain unconfirmed (MCP server choice, budget cap number, reference projects to model).
 
 ## Deliverables
 
