@@ -9,6 +9,10 @@ GitHub (unlike `documentation/`), since they're evidence for a graded deliverabl
 secrets/PII are checked and redacted/cropped before saving -- see the per-file notes below for what
 was redacted in each one.
 
+`screenshots/logos/` is a separate reserved subfolder (not part of the naming convention above) for
+learning-partner logos -- Simplilearn, Microsoft, Virginia Tech -- to be added later for the final
+reflections `.docx`/`.pdf` document.
+
 ## Phase 0 -- Environment & Access Setup
 
 ### Phase0-01-google_cloud_project_created.jpg
