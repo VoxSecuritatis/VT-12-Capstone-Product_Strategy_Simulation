@@ -1,5 +1,7 @@
 # Multi-Agent Market Research & GTM Planning (n8n, MCP, CrewAI)
 
+*Virginia Tech Applied Agentic AI Post-Graduate Program — Capstone Project (Product Strategy Simulation)*
+
 > **Status:** 🚧 Planning stage — environment not yet provisioned, no code written. This README is the north-star spec; see [ROADMAP.md](ROADMAP.md) for the build sequence.
 >
 > **Repo:** [VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation](https://github.com/VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation)

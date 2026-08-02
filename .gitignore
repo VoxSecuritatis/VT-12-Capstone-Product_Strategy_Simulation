@@ -1,0 +1,19 @@
+# Reference material from other personal projects — kept local for context, not part of this capstone's deliverables
+documentation/other_projects/
+
+# Secrets
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node / n8n
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
