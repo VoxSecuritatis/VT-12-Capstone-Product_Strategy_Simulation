@@ -40,7 +40,7 @@ Every design and implementation decision in this repo is measured against these.
 | Latency | <15 minutes from project brief to drafted GTM document |
 | Strategy quality | Human rubric score ≥4/5 (clarity, feasibility, differentiation) |
 | Reproducibility | ≥80% consistent facts across multiple runs |
-| Cost efficiency | Cloud/API spend per run within budget cap — proposed **$1.00 per end-to-end run, per implementation** (gpt-4o-mini token costs + SerpAPI free tier); see Open Questions in `ROADMAP.md` (local only) |
+| Cost efficiency | Cloud/API spend per run within budget cap — proposed **$1.00 per end-to-end run, per implementation** (gpt-4.1-mini token costs + SerpAPI free tier); see Open Questions in `ROADMAP.md` (local only) |
 
 ## Architecture
 
@@ -87,7 +87,7 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 - An MCP server for research tools — adapting an existing/reference implementation rather than building one from scratch (first time working with MCP servers)
 - SerpAPI key — not yet created, needs signup (Phase 0)
 - Google account for Docs export: `brockfrarycerts@gmail.com`, OAuth user-consent flow (both n8n and CrewAI run locally, so no service account needed)
-- **LLM provider:** OpenAI `gpt-4o-mini` as the default model for both implementations — cheap and fast enough to give clean, comparable cost/latency numbers and to support repeated runs for the reproducibility KPI without burning budget. Anthropic Claude (e.g. Haiku 4.5) is an optional later comparison once the baseline works, not required for the MVP.
+- **LLM provider:** OpenAI `gpt-4.1-mini` as the default model for both implementations — cheap and fast enough to give clean, comparable cost/latency numbers and to support repeated runs for the reproducibility KPI without burning budget. Anthropic Claude (e.g. Haiku 4.5) is an optional later comparison once the baseline works, not required for the MVP.
 
 See `SETUP.md` for the full as-verified toolchain: exact versions, install locations, and the install/version/test command for each (Python, `uv`, `nvm`, Node.js, npm, n8n), plus the WSL networking fixes that were needed to get reliable internet access working.
 
