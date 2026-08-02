@@ -20,3 +20,6 @@ Thumbs.db
 
 # directories
 documentation/
+
+# local project instructions, not part of the public repo
+CLAUDE.md

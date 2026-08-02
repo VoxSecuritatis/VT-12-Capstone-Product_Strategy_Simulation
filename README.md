@@ -111,8 +111,8 @@ See [Open Questions](ROADMAP.md#open-questions) in the roadmap — a few remain 
 
 ## Documentation
 
-Full rubric and grading criteria: [documentation/1762856365_capstoneprojectproblemstatement.md](documentation/1762856365_capstoneprojectproblemstatement.md)
-Assignment brief: [documentation/Multi- Agent Market Research and GTM Planning (n8n, MCP, and CrewAI).md](documentation/Multi-%20Agent%20Market%20Research%20and%20GTM%20Planning%20\(n8n,%20MCP,%20and%20CrewAI\).md)
+Full rubric and grading criteria: `documentation/1762856365_capstoneprojectproblemstatement.md` (local only — `documentation/` is git-ignored, not published to GitHub)
+Assignment brief: `documentation/Multi- Agent Market Research and GTM Planning (n8n, MCP, and CrewAI).md` (local only)
 
 ## Patterns carried over from prior VT AGI course projects
 
