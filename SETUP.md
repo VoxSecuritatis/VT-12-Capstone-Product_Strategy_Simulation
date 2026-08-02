@@ -1,4 +1,4 @@
-# Environment Setup (as verified)
+# Environment Setup
 
 This file records the actual toolchain installed and verified for this capstone, with exact versions, locations, and the commands used to obtain/verify each one. It complements `README.md`'s Prerequisites (which states what's needed) by recording the as-built state.
 
