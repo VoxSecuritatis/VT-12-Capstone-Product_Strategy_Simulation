@@ -81,7 +81,7 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 
 ### Secrets: `.env` / `.env.example`
 - **What:** `.env.example` (tracked, public) lists the required variable names with clean placeholder values — `SERPAPI_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODEL` (default `gpt-4.1-mini`). `.env` (git-ignored) holds the real values and already exists locally.
-- **Obtain:** copy `.env.example` to `.env`, then fill in real values: a SerpAPI key (signup still pending — see ROADMAP Phase 0) and an OpenAI API key.
+- **Obtain:** copy `.env.example` to `.env`, then fill in real values: a SerpAPI key and an OpenAI API key. Both are already in place locally.
 - **Rule:** Claude does not read or write `.env` under any circumstances (standing project rule) — only `.env.example` is ever touched by Claude. Verifying `.env`'s contents or filling in real keys is done by the user directly.
 
 ## Important environment caveats
