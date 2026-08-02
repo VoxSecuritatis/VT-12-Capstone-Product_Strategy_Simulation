@@ -63,14 +63,21 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 .
 ├── documentation/          # Problem statement, source rubric docs (this is the north star)
 ├── mcp-server/             # Shared MCP server: research tools used by both n8n and CrewAI
-├── n8n/                    # Exported n8n workflow JSON + setup notes
-├── crewai/                 # CrewAI project (uv structure): agents, tasks, flows, tools
+├── n8n/                    # Exported n8n workflow JSON + setup notes (no Python here)
+├── crewai/                 # CrewAI project (uv structure, `crewai create crew` scaffold)
+│   ├── src/.../            # crew.py, agents.yaml, tasks.yaml, main.py, tools/
+│   └── tests/              # pytest, mocked LLM responses
+├── comparison/
+│   ├── compare.py          # reads run_logs/, computes cost/latency/reliability stats
+│   ├── report.md           # generated comparison writeup (output of compare.py)
+│   └── run_logs/           # raw JSONL/CSV from both implementations, shared schema
 ├── outputs/                # Sample Google Doc exports, evidence JSON, generated tables
-├── tests/                  # Unit tests (mocked tools), scenario tests (fixed briefs)
-└── comparison/             # n8n vs CrewAI cost/latency/reliability results
+└── tests/                  # Unit tests (mocked tools), scenario tests (fixed briefs)
 ```
 
 *(Not yet created — scaffolding happens per `ROADMAP.md`, local only.)*
+
+**Python approach:** fully modular `.py` throughout — no Jupyter notebooks anywhere in this repo. The CrewAI project follows CrewAI's own uv scaffold, the MCP server is a plain long-running Python process, and even the n8n-vs-CrewAI comparison (`comparison/compare.py`) is a script rather than a notebook, so every part of the system is pytest-testable and reproducible with a single command. Both implementations write run-log rows to a shared schema (`run_id, implementation, agent, timestamp, tokens_in, tokens_out, cost_usd, latency_ms, run_status`) in `comparison/run_logs/`, so `compare.py` can read both without special-casing either implementation.
 
 ## Prerequisites
 
