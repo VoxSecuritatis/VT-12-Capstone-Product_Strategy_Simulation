@@ -8,25 +8,20 @@ Authoritative color palette for this project, per `CLAUDE.md`'s Color Palette ru
 |---|---|---|
 | VT Chicago Maroon | `#630031` | Primary color -- default for headers, key accents, and the primary data series in any chart |
 
-## Secondary
-
-| Name | Hex | Use |
-|---|---|---|
-| VT Burnt Orange | `#CF4420` | Secondary/accent color -- pairs with maroon (matches Virginia Tech's official maroon-to-orange gradient branding); use for a second data series or accent highlights, not as the default |
-
 ## Maroon Gradient / Tint Scale
 
-A sequential scale from the primary maroon, for multi-series charts, heatmaps, or tables needing a range rather than a single color.
+This project uses only shades and tints of VT Chicago Maroon -- no secondary hue (e.g. no orange accent). For a second data series, a heatmap, or any accent/secondary need, use another step of this scale rather than a different color.
 
 | Step | Hex | Description |
 |---|---|---|
 | 1 (darkest) | `#3D001F` | Deep shade -- headers on dark backgrounds |
 | 2 | `#630031` | Primary (VT Chicago Maroon) |
-| 3 | `#8C2A54` | Medium shade |
-| 4 | `#B3667F` | Light-medium tint |
-| 5 | `#D9A3B8` | Light tint |
+| 3 | `#8C2A54` | Medium shade -- good for a second data series |
+| 4 | `#B3667F` | Light-medium tint -- good for a third data series |
+| 5 | `#D9A3B8` | Light tint -- subtle highlights |
 | 6 (lightest) | `#F2DEE6` | Pale background tint |
 
 ## Notes
-- These values are drawn from Virginia Tech's public brand identity (Chicago Maroon and Burnt Orange, as seen at vt.edu and in VT course materials) and the attached sample gradient. Verify against the current official VT brand guidelines before the final graded submission, since brand hex values are set by the university and this file's values were not pulled directly from an official brand-guide source.
+- VT Chicago Maroon is drawn from Virginia Tech's public brand identity (as seen at vt.edu and in VT course materials) and the attached sample gradient. Verify against the current official VT brand guidelines before the final graded submission, since brand hex values are set by the university and this file's value was not pulled directly from an official brand-guide source.
+- Deliberately monochromatic: no VT Burnt Orange or other secondary hue is used anywhere in this project, even though it appears in some official VT branding (e.g. gradient bars). Use gradient steps of the maroon scale above for anything that would otherwise call for a second color.
 - ASCII only in generated documents -- no special characters (per `CLAUDE.md`'s Markdown Standards).
