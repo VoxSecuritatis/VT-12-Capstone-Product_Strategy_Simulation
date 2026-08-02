@@ -37,3 +37,8 @@ run.ps1
 
 # local Claude Code project config (settings, commands, agents, skills)
 .claude/
+
+# kept local only, not part of the public repo
+Color_codes.md
+SCREENSHOTS.md
+screenshots/logos/
