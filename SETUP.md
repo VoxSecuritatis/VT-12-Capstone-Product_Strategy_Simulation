@@ -18,7 +18,7 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 | Node.js | 24.18.0 | `~/.nvm/versions/node/v24.18.0/bin/node` | n8n runtime |
 | npm | 11.16.0 | bundled with the above Node.js install | Package manager used to install n8n |
 | n8n | 2.27.4 | `~/.nvm/versions/node/v24.18.0/bin/n8n` | Workflow orchestration (one of the two required implementations) |
-| `.env` / `.env.example` | n/a | project root | Secrets (`.env`, git-ignored, Claude never touches) and their variable-name template (`.env.example`, tracked) |
+| `.env` / `.env.example` | n/a | project root | Secrets (`.env`, git-ignored, never read/written directly) and their variable-name template (`.env.example`, tracked) |
 | `mcp-server` (uv project) | 0.1.0 | `mcp-server/` | Shared MCP server (search + fetch + citation/caching), adapted from the official reference `fetch` server |
 
 ## Per-tool detail
@@ -83,7 +83,7 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 ### Secrets: `.env` / `.env.example`
 - **What:** `.env.example` (tracked, public) lists the required variable names with clean placeholder values — `SERPAPI_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODEL` (default `gpt-5`). `.env` (git-ignored) holds the real values and already exists locally.
 - **Obtain:** copy `.env.example` to `.env`, then fill in real values: a SerpAPI key and an OpenAI API key. Both are already in place locally.
-- **Rule:** Claude does not read or write `.env` under any circumstances (standing project rule) — only `.env.example` is ever touched by Claude. Verifying `.env`'s contents or filling in real keys is done by the user directly.
+- **Rule:** `.env` is never read or written directly, under any circumstances (standing project rule) — only `.env.example` is ever touched programmatically. Verifying `.env`'s contents or filling in real keys is done by the user directly.
 
 ### `mcp-server` (shared MCP server)
 - **What:** a `uv`-structured Python project at `mcp-server/`, adapted from the official reference `fetch` MCP server (`modelcontextprotocol/servers`) plus a custom `search` tool (SerpAPI) and a citation/caching layer. Serves both tools over real MCP protocol via SSE transport (`mcp_server.run(transport="sse")`), so n8n's MCP Client Tool node and CrewAI's `MCPServerAdapter` both connect natively, on the same running server, over `http://127.0.0.1:8000/sse` by default.
@@ -121,13 +121,8 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 
 ### Screenshots (`screenshots/`)
 - **What:** build-walkthrough screenshots for the final reflections/submission document. Tracked (pushed to GitHub), unlike `documentation/`.
-- **Naming:** `<Phase>-<NN>-name.jpg`, where `<Phase>` matches the ROADMAP.md phase (e.g. `Phase0`) and `<NN>` is a two-digit sequence starting at `01`. Claude proactively flags when a screenshot-worthy moment is reached and suggests the filename, one at a time, at the point it's actually reached (not a pre-emptive batch list).
+- **Naming:** `<Phase>-<NN>-name.jpg`, where `<Phase>` matches the ROADMAP.md phase (e.g. `Phase0`) and `<NN>` is a two-digit sequence starting at `01`. Screenshot-worthy moments are flagged one at a time, at the point each is actually reached (not a pre-emptive batch list).
 - **Rule:** check for visible secrets/PII (API keys, OAuth client secrets, email addresses) before saving; redact/crop/blur as needed. Google's own UI already masks OAuth client secrets after creation, which helps.
-
-### `.claude/` (project-local Claude Code config)
-- **What:** the standard Claude Code project scaffold — `settings.json`, `commands/`, `agents/`, `skills/`. Local only, git-ignored.
-- **`skills/python-style/SKILL.md`:** this project's Python coding standards (type hints, docstrings, section headers, testing, error handling, dependencies, formatting), moved out of `CLAUDE.md` so they're loaded on demand only when Python code is actually being written, rather than force-loaded into every turn while no Python exists yet (Phase 0-2). `commands/` and `agents/` remain empty placeholders.
-- **Note:** there's no separate "rules" folder in Claude Code's convention; project-wide instructions live in `CLAUDE.md` at the project root (also git-ignored, local only) — trimmed to remove redundancy with README.md and to relocate Python-specific rules to the skill above.
 
 ## Important environment caveats
 
