@@ -42,9 +42,10 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 - Git-ignored (`.venv/` in `.gitignore`).
 
 ### run.ps1
-- **What:** bootstraps the Windows-side `.venv` (creating it from `D:\Python312` if missing), upgrades `pip`, installs/updates from `requirements.txt`, then launches `main.py`. Same pattern as the prior FinEdge project's `run.ps1`.
-- **Run:** `.\run.ps1` from the project root.
+- **What:** creates the Windows-side `.venv` from `D:\Python312` if missing, dot-sources `.venv\Scripts\Activate.ps1` to genuinely activate it (`$env:VIRTUAL_ENV` set, `python`/`pip` resolve to the venv), upgrades `pip`, installs/updates from `requirements.txt`, then launches `main.py`. Same pattern as the prior FinEdge project's `run.ps1`.
+- **Run:** `.\run.ps1` from the project root. Local-only, git-ignored (not part of the public repo).
 - **Note:** `requirements.txt` and `main.py` don't exist yet (no CrewAI scaffolding has been built), so the last two steps currently fail with a plain "file not found" error — expected until Phase 3 scaffolds the CrewAI project.
+- **Activation scope:** because environment variables in PowerShell are process-wide (not scoped like regular variables), running `.\run.ps1` leaves `$env:VIRTUAL_ENV`/`$env:PATH` activated in your current shell even without dot-sourcing the script itself. The one thing that does require dot-sourcing the outer script (`. .\run.ps1`) is the `(.venv)` prompt-prefix visual indicator, since that's a PowerShell function definition, which is scoped.
 
 ### uv 0.12.1
 - **What:** Rust-based Python package/project manager. Used to scaffold and manage the CrewAI project (the rubric requires "UV structure").
