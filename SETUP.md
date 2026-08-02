@@ -85,8 +85,9 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 - **Rule:** Claude does not read or write `.env` under any circumstances (standing project rule) — only `.env.example` is ever touched by Claude. Verifying `.env`'s contents or filling in real keys is done by the user directly.
 
 ### `.claude/` (project-local Claude Code config)
-- **What:** the standard Claude Code project scaffold — `settings.json`, `commands/`, `agents/`, `skills/` — currently empty placeholders. Local only, git-ignored.
-- **Note:** there's no separate "rules" folder in Claude Code's convention; project-wide instructions live in `CLAUDE.md` at the project root (also git-ignored, local only).
+- **What:** the standard Claude Code project scaffold — `settings.json`, `commands/`, `agents/`, `skills/`. Local only, git-ignored.
+- **`skills/python-style/SKILL.md`:** this project's Python coding standards (type hints, docstrings, section headers, testing, error handling, dependencies, formatting), moved out of `CLAUDE.md` so they're loaded on demand only when Python code is actually being written, rather than force-loaded into every turn while no Python exists yet (Phase 0-2). `commands/` and `agents/` remain empty placeholders.
+- **Note:** there's no separate "rules" folder in Claude Code's convention; project-wide instructions live in `CLAUDE.md` at the project root (also git-ignored, local only) — trimmed to remove redundancy with README.md and to relocate Python-specific rules to the skill above.
 
 ## Important environment caveats
 
