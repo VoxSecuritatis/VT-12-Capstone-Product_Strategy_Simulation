@@ -13,6 +13,7 @@ Nothing below is started yet. Checkboxes track progress across future sessions.
 - [ ] Set up a Google Cloud project, enable Docs API, generate OAuth client credentials for `brockfrarycerts@gmail.com` (user-consent flow — both implementations run locally, so no service account needed)
 - [x] LLM provider chosen: OpenAI `gpt-4o-mini` for both implementations (default). Claude Haiku 4.5 optional later, for a quality/cost comparison once the baseline is working.
 - [ ] Pick an MCP server to adapt (see task below) rather than building one from scratch
+- [ ] Confirm n8n startup procedure: launch from an **interactive WSL terminal** (sources `.bashrc`, sets nvm's PATH), not a scripted `wsl bash -c "..."` call from PowerShell — a prior project lost the nvm-managed Node.js to Windows PATH shadowing this way
 - [x] Git repo identified: [VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation](https://github.com/VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation) (already created on GitHub with a LICENSE + placeholder README — needs local `git init`, remote wired up, and a merge rather than a fresh init)
 - [x] Reviewed prior projects for reusable patterns — `documentation/other_projects/` (git-ignored, local only): a LangGraph 3-agent pitch-deck planner and an n8n+FastAPI LinkedIn automation PRD. Adopting: structured JSONL logging per agent/node transition (cloud mirror optional), pytest against mocked LLM responses only, `.env.example`-with-no-secrets convention. Neither used CrewAI or MCP directly, so no direct code to port for Phases 1/3 — just conventions.
 
@@ -23,7 +24,7 @@ Nothing below is started yet. Checkboxes track progress across future sessions.
 - [ ] Survey existing MCP servers (official reference servers, MCP marketplace, prior-project examples) for a web-search/fetch server that can be adapted rather than built from scratch
 - [ ] Wire the chosen server to SerpAPI for search
 - [ ] Add/confirm tool contracts: search, fetch/snapshot page, citation/evidence record
-- [ ] Add response caching + timestamped snapshots (source-volatility mitigation)
+- [ ] Add response caching + timestamped snapshots (source-volatility mitigation) — this caching/file I/O belongs in the MCP server (or another backend), not in n8n: n8n's Code node sandboxes `require('fs')` and its Write to File node needs binary input, so n8n can't own local evidence/citation caching directly
 - [ ] Smoke-test each tool with `curl`
 
 **Exit criteria:** MCP tools independently return cited, timestamped evidence JSON.
@@ -38,6 +39,8 @@ Nothing below is started yet. Checkboxes track progress across future sessions.
 - [ ] Wire MCP tools into Research Agent node(s)
 - [ ] Wire SerpAPI into Research Agent node(s)
 - [ ] Logging, retries, cost/latency tracking on each node
+- [ ] Wherever paths reconverge before the Docs Writer, use named-node expressions (`$('NodeName').item.json.field`) instead of bare `$json` — downstream of any branch node, `$json` resolves to that branch's output, not the original pipeline data
+- [ ] Use "Using Fields Below" mode (not raw JSON mode) on any HTTP Request node carrying multi-paragraph GTM draft text, to avoid "bad control character" errors on embedded newlines
 
 **2.3 Test & export**
 - [ ] Execute Node testing per node
@@ -99,7 +102,7 @@ Resolved during initial planning:
 - ~~Timeline~~ → No hard deadline; course-end project for the VT Applied Agentic AI Post-Graduate Program, paced at your discretion
 
 - ~~Reference projects~~ → `documentation/other_projects/` (git-ignored, local only): a LangGraph pitch-deck planner and an n8n+FastAPI LinkedIn PRD. Neither uses CrewAI or MCP, so they contribute conventions (logging, testing, secrets handling), not portable code.
-- ~~Git~~ → local repo initialized, merged with the existing GitHub initial commit (`LICENSE` + placeholder `README.md`) via `--allow-unrelated-histories`. Working tree is clean and ready; **push to GitHub is still waiting on your explicit go-ahead** since it's a shared/visible action.
+- ~~Git~~ → local repo initialized, merged with the existing GitHub initial commit (`LICENSE` + placeholder `README.md`) via `--allow-unrelated-histories`, and pushed to `origin/main`.
 
 Still open:
 
