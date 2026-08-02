@@ -10,8 +10,10 @@ secrets/PII are checked and redacted/cropped before saving -- see the per-file n
 was redacted in each one.
 
 `screenshots/logos/` is a separate reserved subfolder (not part of the naming convention above) for
-learning-partner logos -- Simplilearn, Microsoft, Virginia Tech -- to be added later for the final
-reflections `.docx`/`.pdf` document.
+learning-partner logos, for the final reflections `.docx`/`.pdf` document:
+- `Microsoft.jpg` -- Microsoft logo
+- `Virginia_Tech.jpg` -- Virginia Tech Continuing and Professional Education logo
+- `simplilearn.jpg` -- Simplilearn logo
 
 ## Phase 0 -- Environment & Access Setup
 
