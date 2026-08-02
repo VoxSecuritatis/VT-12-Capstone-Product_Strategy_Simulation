@@ -77,7 +77,7 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 
 *(Not yet created — scaffolding happens per `ROADMAP.md`, local only.)*
 
-**Python approach:** fully modular `.py` throughout — no Jupyter notebooks anywhere in this repo. The CrewAI project follows CrewAI's own uv scaffold, the MCP server is a plain long-running Python process, and even the n8n-vs-CrewAI comparison (`comparison/compare.py`) is a script rather than a notebook, so every part of the system is pytest-testable and reproducible with a single command. Both implementations write run-log rows to a shared schema (`run_id, implementation, agent, timestamp, tokens_in, tokens_out, cost_usd, latency_ms, run_status`) in `comparison/run_logs/`, so `compare.py` can read both without special-casing either implementation.
+**Python approach:** fully modular `.py` throughout. The CrewAI project follows CrewAI's own uv scaffold, the MCP server is a plain long-running Python process, and even the n8n-vs-CrewAI comparison (`comparison/compare.py`) is a script rather than a notebook, so every part of the system is pytest-testable and reproducible with a single command. Both implementations write run-log rows to a shared schema (`run_id, implementation, agent, timestamp, tokens_in, tokens_out, cost_usd, latency_ms, run_status`) in `comparison/run_logs/`, so `compare.py` can read both without special-casing either implementation.
 
 ## Prerequisites
 
@@ -121,16 +121,3 @@ See Open Questions in `ROADMAP.md` (local only) — a few remain unconfirmed (MC
 Full rubric and grading criteria: `documentation/1762856365_capstoneprojectproblemstatement.md` (local only — `documentation/` is git-ignored, not published to GitHub)
 Assignment brief: `documentation/Multi- Agent Market Research and GTM Planning (n8n, MCP, and CrewAI).md` (local only)
 
-## Patterns carried over from prior VT AGI course projects
-
-`documentation/other_projects/` (git-ignored — local reference only, not part of this repo's history) holds two earlier course projects that inform this build:
-
-- **Observability:** log every agent/node transition as structured JSONL, one line per transition, locally by default; mirror to a cloud dashboard only if configured, degrading gracefully if not. Satisfies this project's own logging/retry/cost-tracking requirement.
-- **Testing:** run the full test suite against mocked LLM responses — no live API key or network access needed to run `pytest`/CI. Matches the assignment's "unit tests: mock inputs/outputs" requirement.
-- **Secrets:** commit only `.env.example` with variable names, never actual values; `.env` stays git-ignored.
-- **WSL2 networking gotcha:** in a prior project, n8n running in WSL2 could not reach a Windows-side service via `localhost` and needed the Windows host IP instead. Not expected to bite here since n8n, the MCP server, and CrewAI are all planned to run inside the same WSL2 Ubuntu instance — but worth a quick check in Phase 0 if anything ends up split across the WSL2/Windows boundary.
-- **n8n launch method:** starting n8n from PowerShell via a non-interactive `wsl bash -c "..."` call let Windows PATH entries shadow the nvm-managed Node.js install, breaking the n8n binary. Start n8n from an **interactive WSL terminal** instead — it sources `.bashrc`, which sets nvm's PATH before any Windows entries get appended.
-- **n8n expression scope after branch nodes:** downstream of any IF/Slack/HTTP branch node, bare `$json` resolves to *that branch node's* output, not the original pipeline data — a silent source of `undefined` fields. Use named-node expressions instead, e.g. `$('Compose Final').item.json.fieldName`, to reach the correct upstream node regardless of which branch was taken. Relevant anywhere this workflow's paths reconverge before the Docs Writer.
-- **n8n can't write local files directly:** the Code node sandboxes `require('fs')`, and the Write to File node needs binary input, not text. A prior project's workaround was a dedicated backend endpoint that owns all file I/O, with the n8n node being a plain HTTP Request to it. Applies here too: any local evidence/citation caching should live in the MCP server (or another backend), not in an n8n Code/Write-to-File node.
-- **HTTP Request body encoding for multi-line text:** a raw JSON-mode body broke with a "bad control character" error when a field (an LLM-drafted post) contained newlines. Use n8n's "Using Fields Below" mode instead of a raw JSON string — it handles escaping per-field. Relevant wherever this workflow passes multi-paragraph GTM draft text between nodes or into the Docs Writer's HTTP call.
-- **Reusable doc tooling:** a matched pair of scripts (`generate_reflection.py` / `decompose_reflection.py`, python-docx based) assembles/disassembles a formatted `.docx` from markdown + images. Not needed for the core build, but worth reaching for when producing the final submission documentation/reflection.
