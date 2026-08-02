@@ -113,3 +113,12 @@ See [Open Questions](ROADMAP.md#open-questions) in the roadmap — a few remain 
 
 Full rubric and grading criteria: [documentation/1762856365_capstoneprojectproblemstatement.md](documentation/1762856365_capstoneprojectproblemstatement.md)
 Assignment brief: [documentation/Multi- Agent Market Research and GTM Planning (n8n, MCP, and CrewAI).md](documentation/Multi-%20Agent%20Market%20Research%20and%20GTM%20Planning%20\(n8n,%20MCP,%20and%20CrewAI\).md)
+
+## Patterns carried over from prior VT AGI course projects
+
+`documentation/other_projects/` (git-ignored — local reference only, not part of this repo's history) holds two earlier course projects that inform this build:
+
+- **Observability:** log every agent/node transition as structured JSONL, one line per transition, locally by default; mirror to a cloud dashboard only if configured, degrading gracefully if not. Satisfies this project's own logging/retry/cost-tracking requirement.
+- **Testing:** run the full test suite against mocked LLM responses — no live API key or network access needed to run `pytest`/CI. Matches the assignment's "unit tests: mock inputs/outputs" requirement.
+- **Secrets:** commit only `.env.example` with variable names, never actual values; `.env` stays git-ignored.
+- **WSL2 networking gotcha:** in a prior project, n8n running in WSL2 could not reach a Windows-side service via `localhost` and needed the Windows host IP instead. Not expected to bite here since n8n, the MCP server, and CrewAI are all planned to run inside the same WSL2 Ubuntu instance — but worth a quick check in Phase 0 if anything ends up split across the WSL2/Windows boundary.

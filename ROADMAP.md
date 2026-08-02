@@ -14,7 +14,7 @@ Nothing below is started yet. Checkboxes track progress across future sessions.
 - [x] LLM provider chosen: OpenAI `gpt-4o-mini` for both implementations (default). Claude Haiku 4.5 optional later, for a quality/cost comparison once the baseline is working.
 - [ ] Pick an MCP server to adapt (see task below) rather than building one from scratch
 - [x] Git repo identified: [VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation](https://github.com/VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation) (already created on GitHub with a LICENSE + placeholder README — needs local `git init`, remote wired up, and a merge rather than a fresh init)
-- [ ] Review prior projects for reusable MCP server / CrewAI patterns (paths TBD — see [Open Questions](#open-questions))
+- [x] Reviewed prior projects for reusable patterns — `documentation/other_projects/` (git-ignored, local only): a LangGraph 3-agent pitch-deck planner and an n8n+FastAPI LinkedIn automation PRD. Adopting: structured JSONL logging per agent/node transition (cloud mirror optional), pytest against mocked LLM responses only, `.env.example`-with-no-secrets convention. Neither used CrewAI or MCP directly, so no direct code to port for Phases 1/3 — just conventions.
 
 **Exit criteria:** every tool in the architecture diagram can authenticate; `curl` against the MCP server and a manual SerpAPI call both succeed.
 
@@ -98,9 +98,10 @@ Resolved during initial planning:
 - ~~Chatbot screenshots~~ → CLI-based (e.g. `crewai chat`) for now
 - ~~Timeline~~ → No hard deadline; course-end project for the VT Applied Agentic AI Post-Graduate Program, paced at your discretion
 
+- ~~Reference projects~~ → `documentation/other_projects/` (git-ignored, local only): a LangGraph pitch-deck planner and an n8n+FastAPI LinkedIn PRD. Neither uses CrewAI or MCP, so they contribute conventions (logging, testing, secrets handling), not portable code.
+- ~~Git~~ → local repo initialized, merged with the existing GitHub initial commit (`LICENSE` + placeholder `README.md`) via `--allow-unrelated-histories`. Working tree is clean and ready; **push to GitHub is still waiting on your explicit go-ahead** since it's a shared/visible action.
+
 Still open:
 
-1. **Reference projects** — you mentioned other projects with patterns worth modeling (MCP server setup, CrewAI structure). What are their paths, so they can inform Phase 1/3 instead of starting blind?
-2. **MCP server choice** — no specific server picked yet. Once you can point to reference projects (Q1), Phase 1 will evaluate options against those.
-3. **Budget cap number** — proposed **$1.00 per end-to-end run, per implementation**, based on `gpt-4o-mini` pricing (~$0.15/1M input, ~$0.60/1M output tokens) and SerpAPI's free tier (100 searches/month). A full 4-agent run should land well under $0.20 in practice, leaving headroom for repeated reproducibility-KPI runs. Open to a different number if you have one in mind — otherwise this becomes the working target.
-4. **Git** — the GitHub repo already exists with an initial commit (`LICENSE` + placeholder `README.md`), so this needs a `git init` + remote add + merge (not a fresh init) to avoid losing that commit. Local git setup is queued next; **push to GitHub will wait for your explicit go-ahead** since it's a shared/visible action.
+1. **MCP server choice** — no specific server picked yet; neither reference project used MCP, so Phase 1 starts from an external survey (official reference servers, MCP marketplace) rather than an internal example.
+2. **Budget cap number** — proposed **$1.00 per end-to-end run, per implementation**, based on `gpt-4o-mini` pricing (~$0.15/1M input, ~$0.60/1M output tokens) and SerpAPI's free tier (100 searches/month). A full 4-agent run should land well under $0.20 in practice, leaving headroom for repeated reproducibility-KPI runs. Open to a different number if you have one in mind — otherwise this becomes the working target.
