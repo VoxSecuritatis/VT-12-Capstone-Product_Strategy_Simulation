@@ -1,0 +1,117 @@
+{
+  // Display name for this crew
+  "name": "crewai",
+
+  // Agents to include — each must have a matching agents/<name>.jsonc file
+  "agents": ["head_planner", "research_agent", "analyst_agent", "strategy_agent"],
+
+  // Task definitions — executed in order for sequential process
+  "tasks": [
+    {
+      // Task identifier
+      "name": "plan_research_questions",
+
+      // What the task should accomplish
+      // Use {placeholder} inputs here; crewai run prompts for missing values
+      "description": "Given the following product brief: {brief}\n\nRestate the objective in one sentence, then list exactly two short, single-facet research questions for the Research Agent to investigate -- each question must be ONE specific thing to look up, not a list of sub-topics.",
+
+      // Clear definition of what the output should look like
+      "expected_output": "A one-sentence restatement of the objective, followed by exactly two short, single-facet research questions.",
+
+      // Which agent handles this task
+      "agent": "head_planner"
+    },
+    {
+      // Task identifier
+      "name": "research_questions",
+
+      // What the task should accomplish
+      // Use {placeholder} inputs here; crewai run prompts for missing values
+      "description": "Research the two questions from the prior task using web search and page fetches, performing at most one search and one fetch per question; if a fetch fails for a URL, do not retry it and move on to the next search result instead; keep the final summary short.",
+
+      // Clear definition of what the output should look like
+      "expected_output": "A short summary of findings for each research question, with a source citation for each.",
+
+      // Which agent handles this task
+      "agent": "research_agent"
+    },
+    {
+      // Task identifier
+      "name": "synthesize_findings",
+
+      // What the task should accomplish
+      // Use {placeholder} inputs here; crewai run prompts for missing values
+      "description": "Given the Research Agent's findings from the prior task, produce a short synthesis including a brief competitor comparison table and one short paragraph of qualitative analysis such as positioning or SWOT-style observations, keeping it concise as a proof-of-concept rather than an exhaustive report.",
+
+      // Clear definition of what the output should look like
+      "expected_output": "A brief competitor comparison table plus one short paragraph of qualitative analysis.",
+
+      // Which agent handles this task
+      "agent": "analyst_agent"
+    },
+    {
+      // Task identifier
+      "name": "draft_gtm_plan",
+
+      // What the task should accomplish
+      // Use {placeholder} inputs here; crewai run prompts for missing values
+      "description": "Given the Analyst Agent's synthesis from the prior task, draft a short GTM plan including a 1-2 sentence target customer or ICP statement, a one-line value proposition, 2-3 messaging or channel suggestions, and a brief launch-plan outline, keeping it concise as a proof-of-concept rather than an exhaustive plan.",
+
+      // Clear definition of what the output should look like
+      "expected_output": "A short GTM plan: ICP statement, value proposition, messaging/channel suggestions, and a brief launch-plan outline.",
+
+      // Which agent handles this task
+      "agent": "strategy_agent"
+    }
+  ],
+
+  // Execution process
+  // "sequential" — tasks run in order, each receiving prior task outputs
+  // "hierarchical" — a manager agent delegates tasks (requires manager_llm)
+  "process": "sequential",
+
+  // Enable verbose logging during execution
+  "verbose": true,
+
+  // Enable crew memory — persists context and learnings across tasks
+  "memory": false,
+
+  // Automatically plan the execution strategy before running tasks
+  // "planning": false,
+
+  // LLM for the planning step (used when planning is true)
+  // "planning_llm": "openai/gpt-4o",
+
+  // LLM for the manager agent (required when process is "hierarchical")
+  // "manager_llm": "openai/gpt-4o",
+
+  // Crew-level LLM fields also accept object form for custom endpoints
+  // "chat_llm": {"model": "llama3", "provider": "ollama", "base_url": "http://localhost:11434"},
+
+  // Advanced crew options:
+  // Docs: https://docs.crewai.com/concepts/crews
+  // For hierarchical crews, manager_agent can reference an agents/<name>.jsonc file
+  // that is not included in the "agents" list.
+  // "manager_agent": "head_planner",
+  // "before_kickoff_callbacks": [{"python": "my_project.callbacks.before_kickoff"}],
+  // "after_kickoff_callbacks": [{"python": "my_project.callbacks.after_kickoff"}],
+  // "function_calling_llm": "openai/gpt-4o-mini",
+  // "max_rpm": null,
+  // "cache": true,
+  // "knowledge_sources": [],
+  // "embedder": {},
+  // "output_log_file": "crew.log",
+  // "stream": false,
+  // "tracing": false,
+  // "security_config": {},
+
+  // Optional runtime input defaults.
+  // Use {placeholder} in agent or task text, for example:
+  // "description": "Research {topic} and write a brief"
+  // `crewai run` prompts for any placeholders missing from this object.
+  // Fixed test brief -- same one used throughout the n8n implementation (ROADMAP.md Phase 2.3),
+  // reused here so Phase 5's n8n-vs-CrewAI comparison is apples-to-apples.
+  "inputs": {
+    "brief": "A new budget noise-cancelling headphone for commuters. Who's the target customer and who are the main competitors?"
+  }
+}

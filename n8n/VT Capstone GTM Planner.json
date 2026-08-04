@@ -1,0 +1,431 @@
+{
+  "name": "VT Capstone GTM Planner",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9d150a35-fdde-4559-b2a4-eaa3afeb79c1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Head Planner').item.json.output }}",
+        "options": {
+          "systemMessage": "Perform at most one search per research question (2 searches total) and one fetch to read the\ntop result. Do not run multiple searches for the same question. Keep your final summary short.\n\nIf the fetch tool returns an error for a URL, do not retry that same URL — move on to the next search result instead and fetch that one.\n",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        528,
+        0
+      ],
+      "id": "e7c43b89-b658-4c88-9f69-4024d850b786",
+      "name": "Research Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "A new budget noise-cancelling headphone for commuters. Who's the target customer and who are the\nmain competitors?",
+        "options": {
+          "systemMessage": "You are the Head Planner. Given a brief, restate the objective in one sentence and list exactly\n2 short research questions for the Research Agent -- each question must be ONE specific thing to\nlook up, not a list of sub-topics. Keep it short."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f21e8464-9343-4e74-86b6-26d69e0cece3",
+      "name": "Head Planner"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        192
+      ],
+      "id": "d22651e4-dd73-4954-9e52-cf0d239e546a",
+      "name": "OpenAI Chat Model - Head Planner",
+      "credentials": {
+        "openAiApi": {
+          "id": "H1DnJRlHHtxTQh3q",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        192
+      ],
+      "id": "abf8b294-1431-4f96-8d1c-1c627d8b21fa",
+      "name": "OpenAI Chat Model - Research Agent",
+      "credentials": {
+        "openAiApi": {
+          "id": "H1DnJRlHHtxTQh3q",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://127.0.0.1:8000/sse",
+        "serverTransport": "sse",
+        "include": "selected",
+        "includeTools": [
+          "fetch"
+        ],
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        224
+      ],
+      "id": "8d4fc55c-f235-4e71-83dc-2380346cb720",
+      "name": "MCP Client - Research Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Research Agent').item.json.output }}",
+        "options": {
+          "systemMessage": "You are the Analyst Agent. Given the Research Agent's findings below, produce a short synthesis: a brief competitor comparison table and one short paragraph of qualitative analysis (e.g., positioning or SWOT-style observations). Keep it concise — this is a proof-of-concept, not an exhaustive report.",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        848,
+        0
+      ],
+      "id": "6836957a-1fcb-4a2d-93f6-becd1d480353",
+      "name": "Analyst Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Analyst Agent').item.json.output }}",
+        "options": {
+          "systemMessage": "You are the Strategy Agent. Given the Analyst Agent's synthesis below, draft a short GTM plan: a 1-2 sentence target customer/ICP statement, a one-line value proposition, 2-3 messaging or channel suggestions, and a brief launch-plan outline (a few bullet points). Keep it concise — this is a proof-of-concept, not an exhaustive plan."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1168,
+        0
+      ],
+      "id": "9eaa59f4-cdef-4038-b82c-afe3b0e4d279",
+      "name": "Strategy Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        240
+      ],
+      "id": "33277844-3c55-4c9a-845c-28682b7bfbee",
+      "name": "OpenAI Chat Model - Analyst Agent",
+      "credentials": {
+        "openAiApi": {
+          "id": "H1DnJRlHHtxTQh3q",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1136,
+        192
+      ],
+      "id": "ded0337e-ef7c-4be9-964f-41b06a8bc08b",
+      "name": "OpenAI Chat Model - Strategy Agent",
+      "credentials": {
+        "openAiApi": {
+          "id": "H1DnJRlHHtxTQh3q",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Docs Writer - Create a document').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Strategy Agent').item.json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "de0c5d2e-a16d-484d-85bc-acbf9c38e532",
+      "name": "Docs Writer - Insert Content",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "lKf9AAXr8j24ZCPb",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "=default",
+        "title": "=GTM Plan - {{ $now }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        0
+      ],
+      "id": "0c069386-e5ca-4932-a6da-34959f6a4e7b",
+      "name": "Docs Writer - Create a document",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "lKf9AAXr8j24ZCPb",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "q": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Query__q_', ``, 'string') }}",
+        "additionalFields": {
+          "num": "3"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApiTool",
+      "typeVersion": 1,
+      "position": [
+        752,
+        192
+      ],
+      "id": "328f1761-87c7-42e4-911d-b9677962d29a",
+      "name": "Google search in SerpAPI - Research Agent",
+      "credentials": {
+        "serpApi": {
+          "id": "hEjgIo0QgJC5mEPZ",
+          "name": "SerpApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Head Planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Analyst Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Head Planner": {
+      "main": [
+        [
+          {
+            "node": "Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model - Head Planner": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Head Planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model - Research Agent": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client - Research Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyst Agent": {
+      "main": [
+        [
+          {
+            "node": "Strategy Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model - Analyst Agent": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyst Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model - Strategy Agent": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Strategy Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Strategy Agent": {
+      "main": [
+        [
+          {
+            "node": "Docs Writer - Create a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Docs Writer - Create a document": {
+      "main": [
+        [
+          {
+            "node": "Docs Writer - Insert Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google search in SerpAPI - Research Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "abe73551-d577-4092-b4f6-31a5f1c71a29",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0963f1a8fd32e1100c843a4522332eef78d074d2ee20e54146a5c47324258b89"
+  },
+  "nodeGroups": [],
+  "id": "lpdUsFDenLjK2qTS",
+  "tags": []
+}

@@ -16,6 +16,9 @@ venv/
 # MCP server: cached/fetched research snapshots, not source
 mcp-server/.cache/
 
+# comparison: local run-log data, not source
+comparison/run_logs/
+
 # Node / n8n
 node_modules/
 

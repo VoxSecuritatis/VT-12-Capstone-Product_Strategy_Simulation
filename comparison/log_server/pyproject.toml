@@ -1,0 +1,23 @@
+[project]
+name = "log-server"
+version = "0.1.0"
+description = "Local HTTP endpoint that appends run-log rows to the shared comparison/run_logs/run_logs.jsonl file for both the n8n and CrewAI implementations."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "python-dotenv>=1.2.2",
+    "requests>=2.34.2",
+]
+
+[project.scripts]
+log-server = "log_server:main"
+ingest-execution = "log_server.ingest_execution:main"
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

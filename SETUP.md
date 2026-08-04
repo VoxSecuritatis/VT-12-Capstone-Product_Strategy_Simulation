@@ -20,6 +20,9 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 | n8n | 2.27.4 | `~/.nvm/versions/node/v24.18.0/bin/n8n` | Workflow orchestration (one of the two required implementations) |
 | `.env` / `.env.example` | n/a | project root | Secrets (`.env`, git-ignored, never read/written directly) and their variable-name template (`.env.example`, tracked) |
 | `mcp-server` (uv project) | 0.1.0 | `mcp-server/` | Shared MCP server (search + fetch + citation/caching), adapted from the official reference `fetch` server |
+| `log_server` (uv project) | 0.1.0 | `comparison/log_server/` | Local HTTP endpoint (`POST /log`) that appends run-log rows to the shared `comparison/run_logs/run_logs.jsonl` file |
+| `n8n-nodes-serpapi` (n8n community node) | 0.1.10 | installed via n8n Settings -> Community Nodes | Native SerpAPI Google Search tool node (`SerpApi Official`), used by the Research Agent alongside MCP's `fetch` tool |
+| `crewai` (uv project) | 0.1.0 (`vt-capstone-gtm-crew`) | `crewai/` | CrewAI implementation: four agents (Head Planner, Research, Analyst, Strategy), JSON-first scaffold, built via `crewai create crew` |
 
 ## Per-tool detail
 
@@ -112,6 +115,71 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
   Confirmed working: `initialize` returns server info/capabilities, `tools/list` returns both `search` and `fetch` with their schemas, and `tools/call` for both tools returns cited, timestamped JSON. A repeated `fetch` on the same URL returned instantly from cache instead of re-fetching.
 - **Node.js note:** the `fetch` tool uses `readabilipy` for higher-quality article extraction when Node.js is available, gated by `shutil.which("node")` at call time (stdlib only, no extra dependency) rather than a bare try/except -- a known upstream issue (`modelcontextprotocol/servers#4199`) means `readabilipy`'s Node path **hangs indefinitely** if Node is missing or misconfigured, since its subprocess call has no timeout. With Node present (as it is here, for n8n), the *first* live `fetch` call incurs a one-time ~15-20s delay while `npx` installs a helper package; later calls are fast. If Node is ever unavailable, the tool falls back to a pure-Python extraction path (~1.2s per the upstream issue's own benchmark) instead of hanging.
 - **Caching:** `mcp-server/.cache/` (git-ignored) holds one JSON file per citation, keyed by a hash of the URL, with a 6-hour freshness window -- this file I/O lives in the MCP server itself, not n8n (see the Phase 1 note in `ROADMAP.md` on why n8n can't own this directly).
+
+### `log_server` (run-log HTTP endpoint)
+- **What:** a `uv`-structured Python project at `comparison/log_server/`, providing a single local HTTP endpoint (`POST /log`) that n8n's HTTP Request node calls after each agent node finishes. Appends one JSON line per call to the shared `comparison/run_logs/run_logs.jsonl` file (schema: `run_id, implementation, agent, timestamp, tokens_in, tokens_out, cost_usd, latency_ms, run_status`), used by both this n8n implementation and the future CrewAI implementation, so Phase 5's `compare.py` can read both without special-casing either. This file I/O lives here because n8n's Code node sandboxes `fs` and cannot safely write local files itself -- same rationale as `mcp-server/`'s caching layer, plus two 2026 sandbox-escape CVEs (CVE-2026-1470, CVE-2026-0863) around Code-node file/code execution that make routing around the sandbox the wrong move.
+- **Dependencies:** `python-dotenv`, `requests` (runtime, added for `ingest_execution.py` below); `pytest` (dev). No web framework -- the HTTP server itself is stdlib `http.server` only.
+- **Run:** `cd comparison/log_server && uv run log-server` (from WSL). Reads `LOG_SERVER_HOST` / `LOG_SERVER_PORT` from the shell environment if set (defaults `127.0.0.1:8100` -- not in `.env`/`.env.example`, since neither is a secret and both have safe local defaults, matching the `MCP_SERVER_HOST`/`MCP_SERVER_PORT` precedent above). Prints one startup line once ready -- `[INFO] log_server listening on http://127.0.0.1:8100/log` -- that line is the signal it's up and ready for n8n to call.
+- **Test:** `cd comparison/log_server && uv run pytest` -- 30 tests.
+- **Stop:** Ctrl-C in its terminal; prints `[INFO] log_server shutting down` before exiting.
+- **Storage:** `comparison/run_logs/run_logs.jsonl` (git-ignored, like `mcp-server/.cache/`) -- one JSON object per line, created automatically on the first successful `POST /log`.
+
+### `ingest_execution` (post-hoc token/cost/latency capture)
+- **What:** a second entry point in the same `log_server` project, `uv run ingest-execution [execution_id]`. n8n's AI Agent node doesn't expose token usage to downstream nodes (`ROADMAP.md`'s "Known Platform Limitations & Blockers"), so real cost/latency data can't be logged from inside the workflow in real time. This script instead calls n8n's own REST API after a run completes, pulling the real per-node data (which does include it), cross-references it against the exported workflow JSON to attribute each Chat Model's tokens to the right agent, and appends one row per agent/step to `run_logs.jsonl`.
+- **Requires:** `N8N_API_KEY` in `.env` (n8n itself: Settings -> n8n API -> Create an API key). Not in `.env.example` as a value, just the variable name pattern (matches the non-secret host/port precedent's spirit, though this one genuinely is a secret -- still user-pasted directly into `.env`, never through Claude).
+- **Run:** `cd comparison/log_server && uv run ingest-execution` (ingests the most recent execution) or `uv run ingest-execution <id>` (a specific one). Prints one summary line per agent/step logged.
+- **Caution:** never inspect `.env`'s raw content to debug this (e.g., `cat`/`tail`/`od`) -- a real incident during this component's own setup did exactly that and exposed an API key in a session transcript, requiring immediate revocation. Use `python-dotenv` (which this script already does) and, if verification is ever needed, check only derived facts (e.g., whether a variable is set, its length) -- never the raw value.
+
+### `n8n-nodes-serpapi` (n8n community node) 0.1.10
+- **What:** SerpAPI's own official, n8n-verified community node (`SerpApi Official`), providing a native Google Search tool for the AI Agent — used alongside MCP's `fetch` tool by the Research Agent (MCP does the fetch/cite step, SerpAPI does the search step; see `ROADMAP.md` Phase 2.2 for why they're split this way).
+- **Obtain:** in n8n, **Settings** -> **Community Nodes** -> **Install** -> package name `n8n-nodes-serpapi`. Self-hosted n8n only (not built in, unlike n8n Cloud where SerpAPI is preinstalled) — requires Owner/Admin role.
+- **Credential:** created directly in n8n's own credential form (API Key field), using the same `SERPAPI_API_KEY` value already in `.env`. Never entered by Claude.
+
+### `crewai` (CrewAI implementation)
+- **What:** the second of the two required implementations (Phase 3), a `uv`-structured CrewAI
+  project at `crewai/` (package name `vt-capstone-gtm-crew` -- see note below), scaffolded via
+  `crewai create crew crewai` using CrewAI's JSON-first structure (`agents/*.jsonc`, `crew.jsonc`,
+  `tools/`), not the older Python/YAML scaffold. Four agents (Head Planner, Research Agent, Analyst
+  Agent, Strategy Agent) mirror the n8n implementation's roles and System Messages closely, all on
+  `openai/gpt-5`, so the two implementations test the same agent design on two platforms.
+- **Dependencies:** `crewai[tools]` and `crewai-tools[mcp]` (the latter pulls in `mcpadapt`, required
+  by `MCPServerAdapter` -- not included by `crewai[tools]` alone; see gotcha below).
+- **Requires:** its own `crewai/.env` with **both** `OPENAI_API_KEY` and `SERPAPI_API_KEY` -- `crewai
+  run` only ever reads `Path.cwd()/.env` (verified directly from `crewai_cli`'s source), never the
+  project root's `.env`, even though both keys already exist there. Add both directly to
+  `crewai/.env` yourself; Claude never reads or writes `.env` files.
+- **Run:** `cd crewai && crewai run` -- launches an interactive Textual TUI dashboard. **Note:** that
+  dashboard cannot be captured from a non-interactive/background process (no plain-text output flag
+  exists) -- for scripted/logged runs, drive the `Crew` object directly instead:
+  ```python
+  from pathlib import Path
+  from dotenv import load_dotenv
+  load_dotenv(Path("crewai/.env"))
+  from crewai.project.crew_loader import load_crew
+  crew, meta = load_crew(Path("crewai/crew.jsonc"))
+  result = crew.kickoff(inputs={"brief": "..."})
+  print(result.raw)
+  ```
+  This uses the same execution path as `crewai run` for a JSON crew, just without the CLI's dashboard
+  wrapper, and prints plain, readable verbose output instead.
+- **Custom tools:** `crewai/tools/serpapi_search.py` and `crewai/tools/mcp_fetch.py`, wired into
+  Research Agent only (`custom:serpapi_search`, `custom:mcp_fetch` in `agents/research_agent.jsonc`).
+  `mcp_fetch.py` requires `mcp-server/` running locally (see above) -- opens a short-lived
+  `MCPServerAdapter` connection per call rather than holding one open for the whole run.
+- **Real setup gotchas hit and fixed (worth knowing before re-scaffolding or debugging a fresh
+  clone):**
+  - `crewai create crew` runs `git init` inside the new folder -- creates a nested git repo inside
+    this project's own repo. Remove `crewai/.git/` so it's tracked normally (safe as long as it's
+    still empty/no commits).
+  - The scaffold's own `pyproject.toml` names the project `"crewai"`, colliding with the third-party
+    `crewai` package it depends on (`uv sync` fails: "project depends on itself"). Renamed to
+    `vt-capstone-gtm-crew` -- the folder name, crew display name, and `crewai run` usage are
+    unaffected, only the internal Python package identifier changed.
+  - `MCPServerAdapter` needs `mcpadapt`, which requires the separate `crewai-tools[mcp]` extra (see
+    Dependencies above) -- without it, every `mcp_fetch` call fails with an empty error message and
+    the run tries to interactively prompt to install a missing package mid-run.
+- **Test:** run against a real brief as described above; see `ROADMAP.md` Phase 3.3 for the full
+  verified run history (real SerpAPI searches, real MCP fetches, real cost figures).
 
 ### Google Cloud project + OAuth (Docs export)
 - **What:** a Google Cloud project (`vt-capstone-gtm-planner`) with the Google Docs API and Google Drive API enabled; an OAuth consent screen (External, Testing status, scopes `.../auth/documents` + `.../auth/drive.file`, one test user); and an OAuth 2.0 Client ID (Web application type, redirect URI `http://localhost:5678/rest/oauth2-credential/callback` for n8n).
