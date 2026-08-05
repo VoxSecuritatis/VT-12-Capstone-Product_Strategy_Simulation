@@ -23,3 +23,15 @@ definition = "crew.jsonc"
 
 [tool.uv.sources]
 log-server = { path = "../comparison/log_server", editable = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # crewai_tools' own internal use of a deprecated crewai import path,
+    # not something this project's code calls.
+    "ignore:crewai.utilities.lock_store is deprecated.*:DeprecationWarning",
+]
