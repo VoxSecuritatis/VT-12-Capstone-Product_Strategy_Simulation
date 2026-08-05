@@ -3,10 +3,11 @@ name = "vt-capstone-gtm-crew"
 version = "0.1.0"
 description = "crewai using crewAI"
 authors = [{ name = "Your Name", email = "you@example.com" }]
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "crewai[tools]>=1.15.10,<2.0.0",
-    "crewai-tools[mcp]>=1.15.10,<2.0.0"
+    "crewai-tools[mcp]>=1.15.10,<2.0.0",
+    "log-server",
 ]
 
 [build-system]
@@ -19,3 +20,6 @@ only-include = ["agents", "crew.jsonc", "tools", "knowledge", "skills"]
 [tool.crewai]
 type = "crew"
 definition = "crew.jsonc"
+
+[tool.uv.sources]
+log-server = { path = "../comparison/log_server", editable = true }
