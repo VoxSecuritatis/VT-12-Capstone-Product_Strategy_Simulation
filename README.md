@@ -25,7 +25,7 @@ A startup's project brief goes in; a founder-ready go-to-market plan comes out -
 
 > **Status:** ✅ Project complete (environment setup, MCP server, n8n implementation, CrewAI implementation, testing, the n8n-vs-CrewAI comparison, and documentation/submission packaging), plus a full rubric audit confirming every requirement is genuinely met against real project files. Both implementations run end-to-end against the same fixed test brief with real cost/latency/reliability data (`comparison/report.md`): n8n averages **$0.0642**/run and **1m 59.4s**/run; CrewAI averages **$0.1379**/run and **6m 39.0s**/run — both comfortably under the $0.50/run budget cap and 100% reliable across 15 logged runs. Human rubric review: both implementations avg **4.33/5**. All deliverables present (see Deliverables below); the reflection document's Personal Reflections section still needs the author's own review before final submission. This README is the north-star spec for the project.
 >
-> **Reflection Document:** [reflection.pdf](reflection.pdf) · **Full Build History:** [ROADMAP.md](ROADMAP.md)
+> **Full Build History:** [ROADMAP.md](ROADMAP.md) | **Environment Setup:** [SETUP.md](SETUP.md)
 
 ## Overview
 

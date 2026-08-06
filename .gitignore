@@ -45,6 +45,12 @@ run.ps1
 Color_codes.md
 screenshots/logos/
 
+# screenshots: unwatermarked originals and watermarking working folders, not for GitHub
+screenshots/originals_backup/
+screenshots/watermarked/
+screenshots/Backup/
+screenshots/Original Images Backup.zip
+
 # reflection/ stays private except the two architecture diagrams, published via diagrams/
 reflection/
 
