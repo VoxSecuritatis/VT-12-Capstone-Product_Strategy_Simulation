@@ -343,3 +343,7 @@ Terminal, the tail of the same run -- the Tracing Status panel followed by `run_
 - Confirms: `run_and_log.py`'s run-log emission (Phase 3.3's last engineering item) works end-to-end
   on a real run, appending exactly 4 schema-valid rows to `comparison/run_logs/run_logs.jsonl` --
   the same run independently verified directly against the file earlier this session.
+
+---
+
+> © 2026 Brock Frary. All rights reserved.

@@ -14,3 +14,7 @@ uv run pytest             # runs the test suite
 
 No `.env` values required -- override `LOG_SERVER_HOST` / `LOG_SERVER_PORT` as shell env vars if
 the defaults ever conflict with something else running locally.
+
+---
+
+> © 2026 Brock Frary. All rights reserved.

@@ -1,5 +1,26 @@
 # Multi-Agent Market Research & GTM Planning (n8n, MCP, CrewAI)
 
+##### VT_AGI: Capstone -- Product Strategy Simulation | Brock Frary | Published: 2026-08-01 | Updated: 2026-08-06
+
+A startup's project brief goes in; a founder-ready go-to-market plan comes out -- produced twice, in parallel, by two independent four-agent implementations (n8n and CrewAI) that both drive the same Head Planner, Research Agent, Analyst Agent, and Strategy Agent through a shared MCP tool server and SerpAPI, so the two platforms can be compared head-to-head on cost, latency, and reliability across 15 real logged runs.
+
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![CrewAI](https://img.shields.io/badge/CrewAI-1.15.10-FF5A00)
+![n8n](https://img.shields.io/badge/n8n-2.27.4-EA4B71?logo=n8n&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-gpt--5-412991?logo=openai&logoColor=white)
+![MCP](https://img.shields.io/badge/MCP-SSE%20server-000000)
+![SerpAPI](https://img.shields.io/badge/SerpAPI-search-6C63FF)
+![Google Docs](https://img.shields.io/badge/Google%20Docs-export-4285F4?logo=googledocs&logoColor=white)
+![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)
+
+---
+
+## Primary Project Artifact
+
+### [Reflection: Multi-Agent Market Research & GTM Planning](./reflection.pdf)
+
+---
+
 *Virginia Tech Applied Agentic AI Post-Graduate Program — Capstone Project (Product Strategy Simulation)*
 
 > **Status:** ✅ Project complete (environment setup, MCP server, n8n implementation, CrewAI implementation, testing, the n8n-vs-CrewAI comparison, and documentation/submission packaging), plus a full rubric audit confirming every requirement is genuinely met against real project files. Both implementations run end-to-end against the same fixed test brief with real cost/latency/reliability data (`comparison/report.md`): n8n averages **$0.0642**/run and **1m 59.4s**/run; CrewAI averages **$0.1379**/run and **6m 39.0s**/run — both comfortably under the $0.50/run budget cap and 100% reliable across 15 logged runs. Human rubric review: both implementations avg **4.33/5**. All deliverables present (see Deliverables below); the reflection document's Personal Reflections section still needs the author's own review before final submission. This README is the north-star spec for the project.
@@ -186,4 +207,8 @@ Full rubric and grading criteria: `documentation/1762856365_capstoneprojectprobl
 Assignment brief: `documentation/Multi- Agent Market Research and GTM Planning (n8n, MCP, and CrewAI).md` (local only)
 Screenshot index: [`SCREENSHOTS.md`](SCREENSHOTS.md) — what each screenshot in `screenshots/` proves, with real error messages, token counts, and costs
 Full build history: [`ROADMAP.md`](ROADMAP.md) — every phase, design decision, bug hit, and fix, documented as it happened
+
+---
+
+> © 2026 Brock Frary. All rights reserved.
 

@@ -15,3 +15,7 @@ uv run pytest            # runs the test suite (mocked HTTP, no live network nee
 ```
 
 Requires `SERPAPI_API_KEY` in the project-root `.env` (auto-discovered by python-dotenv).
+
+---
+
+> © 2026 Brock Frary. All rights reserved.

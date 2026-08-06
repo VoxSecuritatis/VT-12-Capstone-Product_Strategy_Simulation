@@ -238,3 +238,7 @@ Three changes were needed to get reliable internet access working inside WSL (Se
    firewall=true
    ```
    This, combined with disabling an active VPN, resolved a conflict where WSL2's virtual NAT adapter and the VPN interfered with each other — DNS was slow/flaky and real HTTPS connections (e.g. to PyPI) timed out after resolving, even though raw IP connectivity looked fine. Requires WSL >= 2.0 (confirmed here: 2.7.3.0). Apply changes with `wsl --shutdown` followed by reopening a WSL terminal.
+
+---
+
+> © 2026 Brock Frary. All rights reserved.

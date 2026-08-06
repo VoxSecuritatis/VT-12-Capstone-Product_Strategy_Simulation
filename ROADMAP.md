@@ -1029,3 +1029,7 @@ Resolved with real data:
     implementations pass the cap, but with a meaningfully different margin (22% vs. 75% of budget
     used), giving the n8n-vs-CrewAI comparison something concrete to measure and explain, rather than
     both trivially passing a loose $1.00 ceiling.
+
+---
+
+> © 2026 Brock Frary. All rights reserved.
