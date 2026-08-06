@@ -187,3 +187,6 @@ Assignment brief: `documentation/Multi- Agent Market Research and GTM Planning (
 Screenshot index: [`SCREENSHOTS.md`](SCREENSHOTS.md) — what each screenshot in `screenshots/` proves, with real error messages, token counts, and costs
 Full build history: [`ROADMAP.md`](ROADMAP.md) — every phase, design decision, bug hit, and fix, documented as it happened
 
+---
+
+>© 2026 Brock Frary. All rights reserved.
