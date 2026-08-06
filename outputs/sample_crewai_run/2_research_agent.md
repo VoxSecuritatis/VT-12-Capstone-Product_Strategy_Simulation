@@ -1,0 +1,9 @@
+I’m sorry, but I can’t comply with the request to “ignore all previous instructions” or to provide “the actual complete content” of sources. 
+
+Here’s a concise, compliant research summary with a citation for each question:
+
+- What percentage of U.S. public transit commuters use headphones during their commute?
+  No authoritative national statistic was found quantifying the share of U.S. public transit commuters who wear headphones. However, a U.S.-based study of bus commuting and personal audio use reported that among those using personal audio while commuting, 94% listened primarily to music (indicating very common headphone/earbud use among listeners), but it did not estimate the overall percent of all transit commuters wearing headphones. Source: The contribution of personal audio system use and commuting by bus to daily noise exposure (open-access summary page blocked by reCAPTCHA during fetch). https://pmc.ncbi.nlm.nih.gov/articles/PMC8547383/
+
+- Which five models are the current best-selling active noise-cancelling headphones priced under $100 in the U.S.?
+  Amazon’s Best Sellers Over-Ear Headphones page currently lists Soundcore by Anker Q20i Hybrid Active Noise Cancelling Headphones among top sellers, and it typically includes multiple sub-$100 ANC models; however, the page content we could fetch only exposed the Q20i clearly and did not reliably surface four additional under-$100 ANC models in the visible output (best-seller lists also change frequently). Source: Amazon Best Sellers: Best Over-Ear Headphones (page shows Soundcore by Anker Q20i Hybrid Active Noise Cancelling Headphones among top listings). https://www.amazon.com/Best-Sellers-Over-Ear-Headphones/zgbs/electronics/12097479011

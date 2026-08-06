@@ -1,0 +1,10 @@
+Competitor comparison (Budget ANC headphones under $100, U.S.)
+
+| Product                                   | Price tier | ANC type | Form factor | Market signal from research                         | Implications for our product                       |
+|-------------------------------------------|------------|---------|-------------|-----------------------------------------------------|----------------------------------------------------|
+| Soundcore by Anker Q20i                   | <$100      | Hybrid   | Over‑ear    | Listed among top items on Amazon Best Sellers page  | Baseline to beat on perceived value in Amazon channel |
+| Various sub‑$100 ANC models (unspecified) | <$100      | ANC      | Over‑ear    | Best‑seller list is crowded and volatile; specifics not confirmed in fetch | Category is competitive; differentiation is essential |
+| New Budget ANC Headphone (ours)           | <$100 tgt  | ANC      | TBD         | Primary segment likely transit riders using personal audio; exact U.S. usage rate not quantified | Validate commuter needs; prioritize comfort, low sound‑leak, quick transparency, and solid value |
+
+Qualitative take
+- Primary commuter segment: U.S. public transit riders who use personal audio during commutes; while the exact percentage of riders wearing headphones isn’t quantified in the findings, personal‑audio use among bus commuters appears common among users studied. Competitive anchor under $100 is Soundcore Q20i on Amazon; the broader best‑seller set rotates and is crowded. Positioning opportunity: focus on commuter‑centric value (comfortable fit for longer rides, effective ANC for buses/trains, easy transparency/awareness) and win in the Amazon channel via pricing, reviews, and clear value messaging while running a quick validation to size the headphone‑using transit segment.

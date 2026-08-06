@@ -4,7 +4,7 @@
 
 > **Status:** ✅ Project complete (environment setup, MCP server, n8n implementation, CrewAI implementation, testing, the n8n-vs-CrewAI comparison, and documentation/submission packaging), plus a full rubric audit confirming every requirement is genuinely met against real project files. Both implementations run end-to-end against the same fixed test brief with real cost/latency/reliability data (`comparison/report.md`): n8n averages **$0.0642**/run and **1m 59.4s**/run; CrewAI averages **$0.1379**/run and **6m 39.0s**/run — both comfortably under the $0.50/run budget cap and 100% reliable across 15 logged runs. Human rubric review: both implementations avg **4.33/5**. All deliverables present (see Deliverables below); the reflection document's Personal Reflections section still needs the author's own review before final submission. This README is the north-star spec for the project.
 >
-> **Reflection Document:** [reflection.pdf](reflection.pdf)
+> **Reflection Document:** [reflection.pdf](reflection.pdf) · **Full Build History:** [ROADMAP.md](ROADMAP.md)
 
 ## Overview
 
@@ -57,6 +57,18 @@ Trigger → Head Planner → Research Agent → Analyst Agent → Strategy Agent
 - **Docs Writer** exports the final GTM plan to Google Docs (PDF export optional).
 - **Logging, retries, and cost/latency tracking** are cross-cutting concerns in both implementations -- `log_server` (below) is the shared persistence mechanism both write to.
 
+**Figure A -- Shared Four-Agent Workflow**
+
+![Shared four-agent workflow diagram](diagrams/diagram_workflow.jpg)
+
+The full pipeline from project brief through Head Planner, Research Agent (with its two tool integrations), Analyst Agent, and Strategy Agent, to the implementation-specific export/persist step. Every agent writes a run-log row (cost, tokens, latency) to the shared `comparison/run_logs/run_logs.jsonl` schema, regardless of which implementation produced it.
+
+**Figure B -- n8n vs. CrewAI Swimlane**
+
+![n8n vs. CrewAI swimlane diagram](diagrams/diagram_swimlane.jpg)
+
+The same system as three lanes: n8n's orchestration, CrewAI's orchestration, and the shared MCP Server + SerpAPI tool layer both Research Agent stages call into independently. Both lanes terminate in a different artifact (a Google Doc vs. four markdown files) but converge on the same run-log schema at the bottom, which is what makes an apples-to-apples cost/latency comparison possible at all.
+
 ### MCP server: why we built one, and what it does
 
 The assignment requires starting an MCP server and connecting both implementations to it, but doesn't require writing one from scratch. Rather than build blind (first time working with MCP) or gamble on an unverified off-the-shelf bundle, we adapted the official reference `fetch` server from `modelcontextprotocol/servers` and extended it -- the lowest-cost path that still teaches real MCP mechanics through a working example.
@@ -97,7 +109,8 @@ The rubric explicitly requires "logging, retries, and cost/latency tracking" plu
 
 ```
 .
-├── documentation/          # Problem statement, source rubric docs (this is the north star)
+├── ROADMAP.md              # Full build history: every phase, design decision, bug, and fix, as it happened
+├── diagrams/                # Architecture diagrams (workflow + n8n-vs-CrewAI swimlane), embedded above
 ├── mcp-server/             # Shared MCP server: research tools used by both n8n and CrewAI
 │   └── tests/              # pytest: search/fetch/cache, mocked I/O
 ├── n8n/                    # Exported n8n workflow: VT Capstone GTM Planner.json + setup notes (no Python here)
@@ -113,9 +126,15 @@ The rubric explicitly requires "logging, retries, and cost/latency tracking" plu
 │   ├── tests/               # pytest: compare.py's grouping/aggregation logic
 │   ├── log_server/         # uv project: POST /log HTTP endpoint, appends run-log rows (built, tested)
 │   └── run_logs/           # run_logs.jsonl from both implementations, shared schema (git-ignored)
-├── outputs/                # Sample Google Doc exports, evidence JSON, generated tables
-└── screenshots/            # Build-walkthrough screenshots for the reflections doc, named <Phase>-<NN>-name.jpg
+├── outputs/                # Sample GTM plan outputs, one per implementation
+│   ├── sample_gtm_plan_n8n.md    # Real Google Doc content, n8n's Docs Writer output
+│   └── sample_crewai_run/        # Real per-task markdown, CrewAI's Task.output_file persistence
+└── screenshots/            # Build-walkthrough screenshots, named <Phase>-<NN>-name.jpg -- see SCREENSHOTS.md for what each one proves
 ```
+
+*(`documentation/` -- the assignment's own rubric/problem-statement text -- and a few other local-only files
+stay git-ignored; see `.gitignore` for the full list. Everything that documents this project's own work is
+public.)*
 
 *(Every Python component has its own `tests/` directory rather than one top-level `tests/` folder, since each
 component -- `mcp-server/`, `crewai/`, `comparison/log_server/`, `comparison/` -- is its own independently
@@ -139,7 +158,7 @@ See `SETUP.md` for the full as-verified toolchain: exact versions, install locat
 
 - [x] Exported n8n workflow JSON file
 - [x] CrewAI project files (uv structure)
-- [x] Sample Google Doc output of a GTM plan -- `outputs/sample_gtm_plan_n8n.md` (real content transcribed from the actual Google Doc produced in Phase 2.3, `screenshots/Phase2-08`; the live Doc itself stays in the author's personal Google Drive)
+- [x] Sample Google Doc output of a GTM plan -- `outputs/sample_gtm_plan_n8n.md` (real content transcribed from the actual Google Doc produced in Phase 2.3, `screenshots/Phase2-08`; the live Doc itself stays in the author's personal Google Drive). CrewAI's equivalent -- real, per-task persisted output via `Task.output_file` -- is `outputs/sample_crewai_run/`.
 - [x] CrewAI chatbot screenshots (CLI-based demo, `run_and_log.py`'s terminal output -- see `screenshots/Phase3-01` through `08`, `SCREENSHOTS.md`)
 - [x] Documentation (README) covering architecture, setup, testing notes, and n8n-vs-CrewAI comparison -- see Architecture, Prerequisites (-> `SETUP.md`), Testing strategy below, and the real comparison data in the KPI table above (`comparison/report.md`)
 - [x] Reflection document (`.docx`/`.pdf`) -- VT AGI program-wide submission requirement, not part of this project's own rubric; built locally, not published to GitHub (`reflection/` is git-ignored)
@@ -165,4 +184,6 @@ See `SETUP.md` for the full as-verified toolchain: exact versions, install locat
 
 Full rubric and grading criteria: `documentation/1762856365_capstoneprojectproblemstatement.md` (local only — `documentation/` is git-ignored, not published to GitHub)
 Assignment brief: `documentation/Multi- Agent Market Research and GTM Planning (n8n, MCP, and CrewAI).md` (local only)
+Screenshot index: [`SCREENSHOTS.md`](SCREENSHOTS.md) — what each screenshot in `screenshots/` proves, with real error messages, token counts, and costs
+Full build history: [`ROADMAP.md`](ROADMAP.md) — every phase, design decision, bug hit, and fix, documented as it happened
 

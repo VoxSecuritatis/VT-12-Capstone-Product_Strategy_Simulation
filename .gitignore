@@ -35,9 +35,6 @@ documentation/
 # local project instructions, not part of the public repo
 CLAUDE.md
 
-# working roadmap, kept local only
-ROADMAP.md
-
 # local Windows-side run script, kept local only
 run.ps1
 
@@ -46,8 +43,9 @@ run.ps1
 
 # kept local only, not part of the public repo
 Color_codes.md
-SCREENSHOTS.md
 screenshots/logos/
+
+# reflection/ stays private except the two architecture diagrams, published via diagrams/
 reflection/
 
 # submission-portal packaging output, regenerated from tracked source, not itself source
