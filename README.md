@@ -2,9 +2,9 @@
 
 *Virginia Tech Applied Agentic AI Post-Graduate Program — Capstone Project (Product Strategy Simulation)*
 
-> **Status:** ✅ Phases 0-5 all complete (environment setup, MCP server, n8n implementation, CrewAI implementation, testing, and the n8n-vs-CrewAI comparison), plus a full rubric audit confirming every requirement is genuinely met against real project files. Both implementations run end-to-end against the same fixed test brief with real cost/latency/reliability data (`comparison/report.md`): n8n averages **$0.0642**/run and **1m 59.4s**/run; CrewAI averages **$0.1379**/run and **6m 39.0s**/run — both comfortably under the $0.50/run budget cap and 100% reliable across 15 logged runs. Human rubric review: both implementations avg **4.33/5**. Remaining work: Phase 6 (final documentation polish and submission packaging). This README is the north-star spec; see `ROADMAP.md` (local only — not published to GitHub) for the full build history.
+> **Status:** ✅ Project complete (environment setup, MCP server, n8n implementation, CrewAI implementation, testing, the n8n-vs-CrewAI comparison, and documentation/submission packaging), plus a full rubric audit confirming every requirement is genuinely met against real project files. Both implementations run end-to-end against the same fixed test brief with real cost/latency/reliability data (`comparison/report.md`): n8n averages **$0.0642**/run and **1m 59.4s**/run; CrewAI averages **$0.1379**/run and **6m 39.0s**/run — both comfortably under the $0.50/run budget cap and 100% reliable across 15 logged runs. Human rubric review: both implementations avg **4.33/5**. All deliverables present (see Deliverables below); the reflection document's Personal Reflections section still needs the author's own review before final submission. This README is the north-star spec for the project.
 >
-> **Repo:** [VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation](https://github.com/VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation)
+> **Reflection Document:** [reflection.pdf](reflection.pdf)
 
 ## Overview
 
@@ -39,8 +39,8 @@ Every design and implementation decision in this repo is measured against these.
 | Source quality | ≥80% citations from top-tier/primary sources; 0% broken links |
 | Latency | <15 minutes from project brief to drafted GTM document — **confirmed with real data** (`comparison/report.md`, Phase 5): n8n avg **1m 59.4s**/run, CrewAI avg **6m 39.0s**/run, both well within budget across all 15 logged runs. |
 | Strategy quality | Human rubric score ≥4/5 (clarity, feasibility, differentiation) — **confirmed with real data** (Phase 4): both n8n and CrewAI scored **avg 4.33/5**, each strongest on a different criterion (n8n on differentiation, CrewAI on feasibility). |
-| Reproducibility | ≥80% consistent facts across multiple runs — **confirmed with real data** (Phase 4, 3 reruns per implementation on the primary brief): both implementations were 100% consistent on the core target-customer theme; specific details (age bracket, exact competitor list) varied run to run, normal LLM behavior rather than a system failure — see `ROADMAP.md` Phase 4 for the full honest breakdown, including a disclosed n8n competitor-data-capture asymmetry. |
-| Cost efficiency | Cloud/API spend per run within budget cap — **$0.50 per end-to-end run, per implementation** (tightened from an original $1.00 proposal once real data existed); **confirmed with real data across 15 logged runs** (`comparison/report.md`, Phase 5): n8n avg **$0.0642**/run (6 runs, range $0.0426-$0.1104, all well under the cap), CrewAI avg **$0.1379**/run (9 runs, range $0.0843-$0.2156, all well under the cap) — both pass comfortably, with n8n roughly 2.1x cheaper on average. **Known n8n platform limitation affecting real-time measurement of this KPI:** n8n's AI Agent node does not expose per-agent token usage to downstream nodes ([n8n-io/n8n#26302](https://github.com/n8n-io/n8n/issues/26302)), solved instead with a post-hoc ingestion script — see `ROADMAP.md`'s "Known Platform Limitations & Blockers" section for the full explanation and references. |
+| Reproducibility | ≥80% consistent facts across multiple runs — **confirmed with real data** (Phase 4, 3 reruns per implementation on the primary brief): both implementations were 100% consistent on the core target-customer theme; specific details (age bracket, exact competitor list) varied run to run, normal LLM behavior rather than a system failure, including a disclosed n8n competitor-data-capture asymmetry. |
+| Cost efficiency | Cloud/API spend per run within budget cap — **$0.50 per end-to-end run, per implementation** (tightened from an original $1.00 proposal once real data existed); **confirmed with real data across 15 logged runs** (`comparison/report.md`, Phase 5): n8n avg **$0.0642**/run (6 runs, range $0.0426-$0.1104, all well under the cap), CrewAI avg **$0.1379**/run (9 runs, range $0.0843-$0.2156, all well under the cap) — both pass comfortably, with n8n roughly 2.1x cheaper on average. **Known n8n platform limitation affecting real-time measurement of this KPI:** n8n's AI Agent node does not expose per-agent token usage to downstream nodes ([n8n-io/n8n#26302](https://github.com/n8n-io/n8n/issues/26302)), solved instead with a post-hoc ingestion script (`ingest_execution.py`, see below). |
 
 ## Architecture
 
@@ -89,9 +89,9 @@ The rubric explicitly requires "logging, retries, and cost/latency tracking" plu
 1. Scaffolded `comparison/log_server/` as its own `uv` project, matching `mcp-server/`'s structure exactly.
 2. Wrote schema validation (`run_log.py`) and the HTTP handler (`server.py`) separately, so validation logic is testable without a real server.
 3. Added a `pytest` suite (18 tests) -- schema-validation edge cases plus a real `ThreadingHTTPServer` instance driven over a real local socket in tests, no mocking needed for either.
-4. Started the server for real and confirmed it live with an actual `POST` (`HTTP 201`), then deleted that one test row so the log file starts empty for real data -- see `ROADMAP.md`'s Lessons Learned for why the startup log line alone wasn't a reliable enough signal on its own.
+4. Started the server for real and confirmed it live with an actual `POST` (`HTTP 201`), then deleted that one test row so the log file starts empty for real data.
 
-**Real per-agent cost/latency data, not real-time from n8n:** n8n's AI Agent node doesn't expose token usage to downstream nodes ([n8n-io/n8n#26302](https://github.com/n8n-io/n8n/issues/26302)), so an in-workflow HTTP Request node can't log it directly. `ingest_execution.py` (a second entry point in the same project) solves this by calling n8n's own REST API after a run completes -- which does have the real data -- and cross-referencing it against the exported workflow JSON to attribute each Chat Model's token usage to the right agent. Confirmed against a real full-chain execution: **$0.1104 total cost**, with real `tokens_in`/`tokens_out`/`latency_ms` per agent. See `ROADMAP.md`'s "Known Platform Limitations & Blockers" for the full rationale and `SETUP.md` for run commands.
+**Real per-agent cost/latency data, not real-time from n8n:** n8n's AI Agent node doesn't expose token usage to downstream nodes ([n8n-io/n8n#26302](https://github.com/n8n-io/n8n/issues/26302)), so an in-workflow HTTP Request node can't log it directly. `ingest_execution.py` (a second entry point in the same project) solves this by calling n8n's own REST API after a run completes -- which does have the real data -- and cross-referencing it against the exported workflow JSON to attribute each Chat Model's token usage to the right agent. Confirmed against a real full-chain execution: **$0.1104 total cost**, with real `tokens_in`/`tokens_out`/`latency_ms` per agent. See `SETUP.md` for run commands.
 
 ## Repository structure
 
@@ -119,8 +119,7 @@ The rubric explicitly requires "logging, retries, and cost/latency tracking" plu
 
 *(Every Python component has its own `tests/` directory rather than one top-level `tests/` folder, since each
 component -- `mcp-server/`, `crewai/`, `comparison/log_server/`, `comparison/` -- is its own independently
-runnable/testable unit. `outputs/` still pending final packaging; see `ROADMAP.md`, local only, for remaining
-Phase 6 work.)*
+runnable/testable unit.)*
 
 **Python approach:** fully modular `.py` throughout. The CrewAI project follows CrewAI's own uv scaffold, the MCP server is a plain long-running Python process, and even the n8n-vs-CrewAI comparison (`comparison/compare.py`) is a script rather than a notebook, so every part of the system is pytest-testable and reproducible with a single command. Both implementations write run-log rows to a shared schema (`run_id, implementation, agent, timestamp, tokens_in, tokens_out, cost_usd, latency_ms, run_status`) in `comparison/run_logs/`, so `compare.py` can read both without special-casing either implementation.
 
@@ -136,15 +135,14 @@ Phase 6 work.)*
 
 See `SETUP.md` for the full as-verified toolchain: exact versions, install locations, and the install/version/test command for each (Python, `uv`, `nvm`, Node.js, npm, n8n), plus the WSL networking fixes that were needed to get reliable internet access working.
 
-See Open Questions in `ROADMAP.md` (local only) for full decision history — all resolved as of this writing.
-
 ## Deliverables
 
 - [x] Exported n8n workflow JSON file
 - [x] CrewAI project files (uv structure)
-- [ ] Sample Google Doc output of a GTM plan
+- [x] Sample Google Doc output of a GTM plan -- `outputs/sample_gtm_plan_n8n.md` (real content transcribed from the actual Google Doc produced in Phase 2.3, `screenshots/Phase2-08`; the live Doc itself stays in the author's personal Google Drive)
 - [x] CrewAI chatbot screenshots (CLI-based demo, `run_and_log.py`'s terminal output -- see `screenshots/Phase3-01` through `08`, `SCREENSHOTS.md`)
-- [ ] Documentation (README) covering architecture, setup, testing notes, and n8n-vs-CrewAI comparison
+- [x] Documentation (README) covering architecture, setup, testing notes, and n8n-vs-CrewAI comparison -- see Architecture, Prerequisites (-> `SETUP.md`), Testing strategy below, and the real comparison data in the KPI table above (`comparison/report.md`)
+- [x] Reflection document (`.docx`/`.pdf`) -- VT AGI program-wide submission requirement, not part of this project's own rubric; built locally, not published to GitHub (`reflection/` is git-ignored)
 
 ## Testing strategy
 
@@ -157,11 +155,11 @@ See Open Questions in `ROADMAP.md` (local only) for full decision history — al
 
 | Risk | Mitigation |
 |---|---|
-| Source volatility | Cache results, store page snapshots, include timestamps. **Encountered live** (robots.txt/403 blocks during fetch) and mitigated with a fetch-failure fallback, proven working twice in real runs — see `ROADMAP.md`'s "Known Platform Limitations & Blockers" section for the full incident history and residual risk. |
+| Source volatility | Cache results, store page snapshots, include timestamps. **Encountered live** (robots.txt/403 blocks during fetch) and mitigated with a fetch-failure fallback, proven working twice in real runs. |
 | API rate limits | **As actually implemented:** n8n's "Retry On Fail" on the two Docs Writer nodes uses a single fixed wait (not exponential backoff), and a real transient SerpAPI timeout during Phase 4 testing recovered via the agent's own reasoning loop retrying with a reworded query, not a coded backoff mechanism. No batching or multiple-key rotation is implemented — single-key, low-volume academic-scope usage never hit a real rate limit in this project. |
 | Hallucinations | Evidence IDs are real (`citation_id`, `url`, `fetched_at` on every MCP `search`/`fetch` result). "Flag uncited claims" is a prompt-level instruction (agents are told to cite findings), not a separate automated detection/flagging mechanism — no code inspects output for uncited claims. |
 | Formatting drift | No Google Docs template file is used — Docs Writer creates a blank document then inserts text via a fixed Create → Insert Text operation sequence, which is consistent but isn't a "template" in the traditional sense. No automated post-write validation exists; the one real check performed was a manual visual confirmation of the final document (`Phase2-08` screenshot). |
-| Cost overruns | Token/iteration limits are real and explicit on both implementations' research-capable agents (n8n `maxIterations: 5`; CrewAI `max_iter: 25`, sized to the framework default rather than a lower number after confirming real runs use up to ~18-20 tool-call iterations — see `ROADMAP.md`'s Rubric Audit section). Budget caps are real, confirmed with data (**$0.50/run** cap, both implementations well under it — see Cost efficiency KPI above). "Early summarization" isn't a distinct implemented technique beyond agents being prompted to keep outputs concise. |
+| Cost overruns | Token/iteration limits are real and explicit on both implementations' research-capable agents (n8n `maxIterations: 5`; CrewAI `max_iter: 25`, sized to the framework default rather than a lower number after confirming real runs use up to ~18-20 tool-call iterations). Budget caps are real, confirmed with data (**$0.50/run** cap, both implementations well under it — see Cost efficiency KPI above). "Early summarization" isn't a distinct implemented technique beyond agents being prompted to keep outputs concise. |
 
 ## Documentation
 
