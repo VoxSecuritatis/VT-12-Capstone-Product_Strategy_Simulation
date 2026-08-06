@@ -54,5 +54,8 @@ screenshots/Original Images Backup.zip
 # reflection/ stays private except the two architecture diagrams, published via diagrams/
 reflection/
 
+# unwatermarked original of the published reflection.pdf, not for GitHub
+reflection - Original.pdf
+
 # submission-portal packaging output, regenerated from tracked source, not itself source
 submission/
