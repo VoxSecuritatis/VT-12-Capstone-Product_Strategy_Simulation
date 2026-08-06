@@ -23,6 +23,7 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
 | `log_server` (uv project) | 0.1.0 | `comparison/log_server/` | Local HTTP endpoint (`POST /log`) that appends run-log rows to the shared `comparison/run_logs/run_logs.jsonl` file |
 | `n8n-nodes-serpapi` (n8n community node) | 0.1.10 | installed via n8n Settings -> Community Nodes | Native SerpAPI Google Search tool node (`SerpApi Official`), used by the Research Agent alongside MCP's `fetch` tool |
 | `crewai` (uv project) | 0.1.0 (`vt-capstone-gtm-crew`) | `crewai/` | CrewAI implementation: four agents (Head Planner, Research, Analyst, Strategy), JSON-first scaffold, built via `crewai create crew` |
+| `compare.py` | n/a (plain script) | `comparison/compare.py` | Reads `comparison/run_logs/run_logs.jsonl` (shared schema) and writes `comparison/report.md` with cost/latency/reliability comparison tables for both implementations |
 
 ## Per-tool detail
 
@@ -148,20 +149,16 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
   run` only ever reads `Path.cwd()/.env` (verified directly from `crewai_cli`'s source), never the
   project root's `.env`, even though both keys already exist there. Add both directly to
   `crewai/.env` yourself; Claude never reads or writes `.env` files.
-- **Run:** `cd crewai && crewai run` -- launches an interactive Textual TUI dashboard. **Note:** that
-  dashboard cannot be captured from a non-interactive/background process (no plain-text output flag
-  exists) -- for scripted/logged runs, drive the `Crew` object directly instead:
-  ```python
-  from pathlib import Path
-  from dotenv import load_dotenv
-  load_dotenv(Path("crewai/.env"))
-  from crewai.project.crew_loader import load_crew
-  crew, meta = load_crew(Path("crewai/crew.jsonc"))
-  result = crew.kickoff(inputs={"brief": "..."})
-  print(result.raw)
-  ```
-  This uses the same execution path as `crewai run` for a JSON crew, just without the CLI's dashboard
-  wrapper, and prints plain, readable verbose output instead.
+- **Run:** `cd crewai && uv run python run_and_log.py ["optional brief text"]` -- the standard way to
+  run this crew. `crewai run` itself launches an interactive Textual TUI dashboard that **cannot be
+  captured from a non-interactive/background process** (no plain-text output flag exists), so
+  `run_and_log.py` drives the `Crew` object directly instead (`crewai.project.crew_loader.load_crew`
+  + `.kickoff()` -- the same execution path `crewai run` uses for a JSON crew, just without the CLI's
+  dashboard wrapper), printing plain, readable verbose output. It also appends one run-log row per
+  agent to `comparison/run_logs/run_logs.jsonl` (real per-agent token usage via
+  `agent.llm.get_token_usage_summary()`, real per-task latency via `Task.start_time`/`end_time`,
+  converted to UTC-aware timestamps to match n8n's rows). Defaults to the fixed test brief if no
+  argument is given.
 - **Custom tools:** `crewai/tools/serpapi_search.py` and `crewai/tools/mcp_fetch.py`, wired into
   Research Agent only (`custom:serpapi_search`, `custom:mcp_fetch` in `agents/research_agent.jsonc`).
   `mcp_fetch.py` requires `mcp-server/` running locally (see above) -- opens a short-lived
@@ -178,14 +175,33 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
   - `MCPServerAdapter` needs `mcpadapt`, which requires the separate `crewai-tools[mcp]` extra (see
     Dependencies above) -- without it, every `mcp_fetch` call fails with an empty error message and
     the run tries to interactively prompt to install a missing package mid-run.
-- **Test:** run against a real brief as described above; see `ROADMAP.md` Phase 3.3 for the full
-  verified run history (real SerpAPI searches, real MCP fetches, real cost figures).
+- **Test:** `cd crewai && uv run pytest` -- 5 tests (`crewai/tests/`) covering `serpapi_search.py` and
+  `mcp_fetch.py` with mocked I/O (`pytest>=9.1.1` added as a dev dependency, matching
+  `mcp-server`/`log_server`'s convention). Plus real end-to-end runs via `run_and_log.py` as described
+  above; see `ROADMAP.md` Phase 3.3/4 for the full verified run history (real SerpAPI searches, real
+  MCP fetches, real cost figures, scenario/reproducibility testing).
 
 ### Google Cloud project + OAuth (Docs export)
 - **What:** a Google Cloud project (`vt-capstone-gtm-planner`) with the Google Docs API and Google Drive API enabled; an OAuth consent screen (External, Testing status, scopes `.../auth/documents` + `.../auth/drive.file`, one test user); and an OAuth 2.0 Client ID (Web application type, redirect URI `http://localhost:5678/rest/oauth2-credential/callback` for n8n).
 - **Obtain:** walked through in Google Cloud Console (console.cloud.google.com) — see `screenshots/Phase0-01` through `Phase0-08` for the build walkthrough.
 - **Credentials:** Client ID/Secret added to `.env` as `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` by the user. The downloaded `client_secret*.json` file Google's console offers is git-ignored (`client_secret*.json` / `*credentials*.json` patterns) — it was briefly sitting untracked in the project root unprotected before that pattern was added; no exposure occurred since it was never committed.
-- **Note:** this Client ID currently has one redirect URI (n8n's). When Phase 3 (CrewAI) needs its own OAuth flow, decide then whether to add a second redirect URI to this same client or create a separate one.
+- **Note:** this Client ID has one redirect URI (n8n's), and that remains the only one needed --
+  CrewAI's implementation (Phase 3) ends at the drafted GTM plan text and never adds its own Google
+  Docs export step, confirmed during Phase 4 testing (no Google API code anywhere in `crewai/`).
+
+### `compare.py` (n8n vs. CrewAI comparison report)
+- **What:** a plain, standalone script at `comparison/compare.py` (Phase 5) -- reads
+  `comparison/run_logs/run_logs.jsonl` (the shared schema both `log_server`'s `ingest-execution` and
+  `crewai/run_and_log.py` write to) and writes `comparison/report.md` with cost, latency, and
+  reliability/error-rate comparison tables across both implementations. Pure standard library
+  (`json`, `pathlib`, `statistics`, `dataclasses`) -- no new dependency, matching this project's
+  established stdlib-first convention (same reasoning as `log_server`'s stdlib `http.server` choice).
+- **Run:** `cd comparison/log_server && uv run python ../compare.py` (reuses `log_server`'s existing
+  venv, since `compare.py` itself needs no dependencies beyond the standard library -- no separate
+  `uv` project was created just for one script).
+- **Test:** `cd comparison/log_server && uv run pytest ../tests/` -- 5 tests
+  (`comparison/tests/test_compare.py`) covering run-grouping, per-run cost/latency totals, and
+  success-rate math against a temporary JSONL fixture.
 
 ### Screenshots (`screenshots/`)
 - **What:** build-walkthrough screenshots for the final reflections/submission document. Tracked (pushed to GitHub), unlike `documentation/`.
