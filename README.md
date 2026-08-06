@@ -211,4 +211,3 @@ Full build history: [`ROADMAP.md`](ROADMAP.md) — every phase, design decision,
 ---
 
 > © 2026 Brock Frary. All rights reserved.
-
