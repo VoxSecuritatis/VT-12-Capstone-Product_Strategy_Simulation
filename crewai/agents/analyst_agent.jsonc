@@ -58,10 +58,15 @@
     "verbose": false,
 
     // Allow this agent to delegate tasks to other agents in the crew
-    "allow_delegation": false
+    "allow_delegation": false,
 
-    // Maximum reasoning iterations per task (prevents infinite loops)
-    // "max_iter": 25,
+    // Maximum reasoning iterations per task (prevents infinite loops).
+    // Explicit rather than relying on the implicit framework default, matching
+    // n8n's pattern of an explicit maxIterations: 5 on its Research Agent and
+    // Analyst Agent nodes (this agent has no tools, so it always completes in
+    // one iteration regardless -- set for parity with n8n's real pattern, not
+    // because it changes actual behavior here).
+    "max_iter": 25
 
     // Maximum tokens for agent's response generation
     // "max_tokens": null,

@@ -163,6 +163,12 @@ Environment: WSL2, Ubuntu 24.04.4 LTS, on Windows.
   Research Agent only (`custom:serpapi_search`, `custom:mcp_fetch` in `agents/research_agent.jsonc`).
   `mcp_fetch.py` requires `mcp-server/` running locally (see above) -- opens a short-lived
   `MCPServerAdapter` connection per call rather than holding one open for the whole run.
+- **Interim outputs:** each of `crew.jsonc`'s four tasks sets `output_file`, so every real run writes
+  each agent's raw markdown output to `crewai/outputs/1_head_planner.md` through `4_strategy_agent.md`
+  (git-ignored -- regenerated fresh each run, not tracked source).
+- **Iteration cap:** `research_agent.jsonc` and `analyst_agent.jsonc` both set `max_iter: 25`
+  explicitly (matching CrewAI's own framework default, not a lower number -- see `ROADMAP.md`'s
+  Phase 3.2 for why a lower cap would have broken already-verified real runs).
 - **Real setup gotchas hit and fixed (worth knowing before re-scaffolding or debugging a fresh
   clone):**
   - `crewai create crew` runs `git init` inside the new folder -- creates a nested git repo inside

@@ -2,7 +2,7 @@
 
 *Virginia Tech Applied Agentic AI Post-Graduate Program — Capstone Project (Product Strategy Simulation)*
 
-> **Status:** 🚧 Phase 0 (Environment & Access Setup), Phase 1 (MCP Server), and Phase 2.1 (n8n <-> MCP wiring, confirmed end-to-end) complete. The full n8n agent chain — Head Planner, Research Agent, Analyst Agent, Strategy Agent, and Docs Writer — is built, chained, and confirmed working end-to-end in a single full-workflow run (~166,564 tokens, 3m 5s), producing a real, readable Google Doc GTM plan and meeting the <15-minute exit criterion, including recovery from a real fetch failure mid-run. Remaining Phase 2 work: per-node logging/retries tracking and emitting run-log rows, before moving to Phase 3 (CrewAI). This README is the north-star spec; see `ROADMAP.md` (local only — not published to GitHub) for the build sequence.
+> **Status:** ✅ Phases 0-5 all complete (environment setup, MCP server, n8n implementation, CrewAI implementation, testing, and the n8n-vs-CrewAI comparison), plus a full rubric audit confirming every requirement is genuinely met against real project files. Both implementations run end-to-end against the same fixed test brief with real cost/latency/reliability data (`comparison/report.md`): n8n averages **$0.0642**/run and **1m 59.4s**/run; CrewAI averages **$0.1379**/run and **6m 39.0s**/run — both comfortably under the $0.50/run budget cap and 100% reliable across 15 logged runs. Human rubric review: both implementations avg **4.33/5**. Remaining work: Phase 6 (final documentation polish and submission packaging). This README is the north-star spec; see `ROADMAP.md` (local only — not published to GitHub) for the full build history.
 >
 > **Repo:** [VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation](https://github.com/VoxSecuritatis/VT-12-Capstone-Product_Strategy_Simulation)
 
@@ -158,10 +158,10 @@ See Open Questions in `ROADMAP.md` (local only) for full decision history — al
 | Risk | Mitigation |
 |---|---|
 | Source volatility | Cache results, store page snapshots, include timestamps. **Encountered live** (robots.txt/403 blocks during fetch) and mitigated with a fetch-failure fallback, proven working twice in real runs — see `ROADMAP.md`'s "Known Platform Limitations & Blockers" section for the full incident history and residual risk. |
-| API rate limits | Exponential backoff, batching, multiple keys (if permitted) |
-| Hallucinations | Mandate evidence IDs per fact; flag uncited claims |
-| Formatting drift | Stable Google Docs templates + post-write validation |
-| Cost overruns | Token limits, early summarization, budget caps |
+| API rate limits | **As actually implemented:** n8n's "Retry On Fail" on the two Docs Writer nodes uses a single fixed wait (not exponential backoff), and a real transient SerpAPI timeout during Phase 4 testing recovered via the agent's own reasoning loop retrying with a reworded query, not a coded backoff mechanism. No batching or multiple-key rotation is implemented — single-key, low-volume academic-scope usage never hit a real rate limit in this project. |
+| Hallucinations | Evidence IDs are real (`citation_id`, `url`, `fetched_at` on every MCP `search`/`fetch` result). "Flag uncited claims" is a prompt-level instruction (agents are told to cite findings), not a separate automated detection/flagging mechanism — no code inspects output for uncited claims. |
+| Formatting drift | No Google Docs template file is used — Docs Writer creates a blank document then inserts text via a fixed Create → Insert Text operation sequence, which is consistent but isn't a "template" in the traditional sense. No automated post-write validation exists; the one real check performed was a manual visual confirmation of the final document (`Phase2-08` screenshot). |
+| Cost overruns | Token/iteration limits are real and explicit on both implementations' research-capable agents (n8n `maxIterations: 5`; CrewAI `max_iter: 25`, sized to the framework default rather than a lower number after confirming real runs use up to ~18-20 tool-call iterations — see `ROADMAP.md`'s Rubric Audit section). Budget caps are real, confirmed with data (**$0.50/run** cap, both implementations well under it — see Cost efficiency KPI above). "Early summarization" isn't a distinct implemented technique beyond agents being prompted to keep outputs concise. |
 
 ## Documentation
 

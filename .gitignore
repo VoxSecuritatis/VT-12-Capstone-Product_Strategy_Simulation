@@ -19,6 +19,9 @@ mcp-server/.cache/
 # comparison: local run-log data, not source
 comparison/run_logs/
 
+# crewai: per-task interim outputs, regenerated fresh each run, not source
+crewai/outputs/
+
 # Node / n8n
 node_modules/
 
@@ -45,3 +48,4 @@ run.ps1
 Color_codes.md
 SCREENSHOTS.md
 screenshots/logos/
+reflection/

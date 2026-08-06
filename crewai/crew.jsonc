@@ -19,7 +19,12 @@
       "expected_output": "A one-sentence restatement of the objective, followed by exactly two short, single-facet research questions.",
 
       // Which agent handles this task
-      "agent": "head_planner"
+      "agent": "head_planner",
+
+      // Persist this task's raw markdown output to a file (rubric Action 2.2:
+      // "Retain interim outputs"). Regenerated fresh each run, not tracked in git.
+      "output_file": "outputs/1_head_planner.md",
+      "create_directory": true
     },
     {
       // Task identifier
@@ -33,7 +38,12 @@
       "expected_output": "A short summary of findings for each research question, with a source citation for each.",
 
       // Which agent handles this task
-      "agent": "research_agent"
+      "agent": "research_agent",
+
+      // Persist this task's raw markdown output to a file (rubric Action 2.2:
+      // "Retain interim outputs"). Regenerated fresh each run, not tracked in git.
+      "output_file": "outputs/2_research_agent.md",
+      "create_directory": true
     },
     {
       // Task identifier
@@ -47,7 +57,12 @@
       "expected_output": "A brief competitor comparison table plus one short paragraph of qualitative analysis.",
 
       // Which agent handles this task
-      "agent": "analyst_agent"
+      "agent": "analyst_agent",
+
+      // Persist this task's raw markdown output to a file (rubric Action 2.2:
+      // "Retain interim outputs"). Regenerated fresh each run, not tracked in git.
+      "output_file": "outputs/3_analyst_agent.md",
+      "create_directory": true
     },
     {
       // Task identifier
@@ -61,7 +76,12 @@
       "expected_output": "A short GTM plan: ICP statement, value proposition, messaging/channel suggestions, and a brief launch-plan outline.",
 
       // Which agent handles this task
-      "agent": "strategy_agent"
+      "agent": "strategy_agent",
+
+      // Persist this task's raw markdown output to a file (rubric Action 2.2:
+      // "Retain interim outputs"). Regenerated fresh each run, not tracked in git.
+      "output_file": "outputs/4_strategy_agent.md",
+      "create_directory": true
     }
   ],
 
