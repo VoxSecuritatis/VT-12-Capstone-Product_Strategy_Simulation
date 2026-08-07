@@ -1,7 +1,4 @@
-# Multi-Agent Market Research & GTM (Go To Market) Planning 
-# (n8n, MCP, CrewAI)
-
----
+# Multi-Agent Market Research & GTM (Go To Market) Planning <br> (n8n, MCP, CrewAI) </br>
 
 ##### VT_AGI: Capstone -- Product Strategy Simulation | Brock Frary | Published: 2026-08-01 | Updated: 2026-08-06
 
