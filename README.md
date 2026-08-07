@@ -1,6 +1,6 @@
 # Multi-Agent Market Research & GTM (Go To Market) Planning <br> (n8n, MCP, CrewAI) </br>
 
-##### VT_AGI: Capstone -- Product Strategy Simulation | Brock Frary | Published: 2026-08-01 | Updated: 2026-08-06
+##### VT_AGI: Capstone -- Product Strategy Simulation | Brock Frary | Published: 2026-08-01 | Updated: 2026-08-07
 
 A startup's project brief goes in; a founder-ready go-to-market plan comes out -- produced twice, in parallel, by two independent four-agent implementations (n8n and CrewAI) that both drive the same Head Planner, Research Agent, Analyst Agent, and Strategy Agent through a shared MCP tool server and SerpAPI, so the two platforms can be compared head-to-head on cost, latency, and reliability across 15 real logged runs.
 
