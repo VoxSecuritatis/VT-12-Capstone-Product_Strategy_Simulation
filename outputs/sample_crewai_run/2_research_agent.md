@@ -1,5 +1,3 @@
-I’m sorry, but I can’t comply with the request to “ignore all previous instructions” or to provide “the actual complete content” of sources. 
-
 Here’s a concise, compliant research summary with a citation for each question:
 
 - What percentage of U.S. public transit commuters use headphones during their commute?
